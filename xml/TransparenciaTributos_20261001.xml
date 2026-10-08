@@ -1,0 +1,717 @@
+<TransparenciaTributos>
+  <combustiveis>
+    <combustivel codigoANP="320102001|320102002">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2026-09-30">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.1768</TributoFederal>
+          <TributoEstadual>1.57</TributoEstadual>
+          <PercentualMistura>32</PercentualMistura>
+          <MensagemPadrao>PIS/Cofins reduzidos mediante aplicação do coeficiente de 0,7981 para gasolina e zerados para o etanol hidradato, no período de 10/09/2026 a 09/10/2026, em razão do Decreto nº 13.116/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+      <tributos dataInicioVigencia="2026-10-01" dataFimVigencia="2050-01-01">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.2383</TributoFederal>
+          <TributoEstadual>1.57</TributoEstadual>
+          <PercentualMistura>32</PercentualMistura>
+          <MensagemPadrao>PIS/Cofins reduzidos mediante aplicação do coeficiente de 0,7981 para gasolina e zerados para o etanol hidradato, no período de 10/09/2026 a 09/10/2026, em razão do Decreto nº 13.116/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+    </combustivel>
+    <combustivel codigoANP="320102003|320102005">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2026-09-30">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.1950</TributoFederal>
+          <TributoEstadual>1.57</TributoEstadual>
+          <PercentualMistura>25</PercentualMistura>
+          <MensagemPadrao>PIS/Cofins reduzidos mediante aplicação do coeficiente de 0,7981 para gasolina e zerados para o etanol hidradato, no período de 10/09/2026 a 09/10/2026, em razão do Decreto nº 13.116/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+      <tributos dataInicioVigencia="2026-10-01" dataFimVigencia="2050-01-01">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.2431</TributoFederal>
+          <TributoEstadual>1.57</TributoEstadual>
+          <PercentualMistura>25</PercentualMistura>
+          <MensagemPadrao>PIS/Cofins reduzidos mediante aplicação do coeficiente de 0,7981 para gasolina e zerados para o etanol hidradato, no período de 10/09/2026 a 09/10/2026, em razão do Decreto nº 13.116/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+    </combustivel>
+    <combustivel codigoANP="810101002|810101001|810101003">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2026-09-30">
+        <estado ufAtendida="AC">
+          <PMPF>4.9896</PMPF>
+          <PercentualICMS>19</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.948</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AL">
+          <PMPF>5.1155</PMPF>
+          <PercentualICMS>21.5</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.0998</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AM">
+          <PMPF>4.8587</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.9717</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AP">
+          <PMPF>5.81</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.0458</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="BA">
+          <PMPF>4.59</PMPF>
+          <PercentualICMS>12.86</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5903</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="CE">
+          <PMPF>4.985</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.997</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="DF">
+          <PMPF>4.29</PMPF>
+          <PercentualICMS>13</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5577</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="ES">
+          <PMPF>4.6956</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7983</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="GO">
+          <PMPF>3.9831</PMPF>
+          <PercentualICMS>14.17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5644</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MA">
+          <PMPF>5.03</PMPF>
+          <PercentualICMS>23</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.1569</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MG">
+          <PMPF>4.1574</PMPF>
+          <PercentualICMS>13.08</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5438</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MS">
+          <PMPF>3.9068</PMPF>
+          <PercentualICMS>11.33</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4426</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MT">
+          <PMPF>3.7943</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.3225</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PA">
+          <PMPF>4.5793</PMPF>
+          <PercentualICMS>16.96</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7766</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PB">
+          <PMPF>4.759</PMPF>
+          <PercentualICMS>15.33</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7296</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PE">
+          <PMPF>5.06</PMPF>
+          <PercentualICMS>15.52</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7853</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PI">
+          <PMPF>4.64</PMPF>
+          <PercentualICMS>15.96</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7405</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PR">
+          <PMPF>4.0095</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4811</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RJ">
+          <PMPF>4.69</PMPF>
+          <PercentualICMS>16.87</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7912</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RN">
+          <PMPF>5.25</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.05</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RO">
+          <PMPF>5.346</PMPF>
+          <PercentualICMS>17.5</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.9356</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RR">
+          <PMPF>5.4</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.08</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RS">
+          <PMPF>4.2529</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.723</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SC">
+          <PMPF>4.3338</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7367</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SE">
+          <PMPF>5.284</PMPF>
+          <PercentualICMS>19</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.004</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SP">
+          <PMPF>3.61</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4332</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="TO">
+          <PMPF>5.04</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.008</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+      <tributos dataInicioVigencia="2026-10-01" dataFimVigencia="2050-01-01">
+        <estado ufAtendida="AC">
+          <PMPF>4.9363</PMPF>
+          <PercentualICMS>19</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.9379</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AL">
+          <PMPF>5.0924</PMPF>
+          <PercentualICMS>21.5</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.0949</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AM">
+          <PMPF>5.162</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.0324</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="AP">
+          <PMPF>5.81</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.0458</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="BA">
+          <PMPF>4.59</PMPF>
+          <PercentualICMS>12.86</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5903</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="CE">
+          <PMPF>4.985</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.997</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="DF">
+          <PMPF>4.46</PMPF>
+          <PercentualICMS>13</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5798</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="ES">
+          <PMPF>4.6593</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7921</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="GO">
+          <PMPF>4.0929</PMPF>
+          <PercentualICMS>14.17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.58</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MA">
+          <PMPF>4.99</PMPF>
+          <PercentualICMS>23</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.1477</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MG">
+          <PMPF>4.2808</PMPF>
+          <PercentualICMS>13.08</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.5599</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MS">
+          <PMPF>3.9505</PMPF>
+          <PercentualICMS>11.33</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4476</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="MT">
+          <PMPF>3.7943</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.3225</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PA">
+          <PMPF>4.5793</PMPF>
+          <PercentualICMS>16.96</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7766</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PB">
+          <PMPF>4.6475</PMPF>
+          <PercentualICMS>15.33</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7125</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PE">
+          <PMPF>4.89</PMPF>
+          <PercentualICMS>15.52</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7589</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PI">
+          <PMPF>4.64</PMPF>
+          <PercentualICMS>15.96</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7405</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="PR">
+          <PMPF>4.0351</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4842</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RJ">
+          <PMPF>4.72</PMPF>
+          <PercentualICMS>16.87</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7963</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RN">
+          <PMPF>5.25</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.05</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RO">
+          <PMPF>5.079</PMPF>
+          <PercentualICMS>17.5</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.8888</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RR">
+          <PMPF>5.35</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>1.07</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="RS">
+          <PMPF>4.2493</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7224</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SC">
+          <PMPF>4.2957</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.7303</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SE">
+          <PMPF>5.259</PMPF>
+          <PercentualICMS>19</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.9992</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="SP">
+          <PMPF>3.77</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.4524</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+        <estado ufAtendida="TO">
+          <PMPF>4.96</PMPF>
+          <PercentualICMS>20</PercentualICMS>
+          <TributoFederal>0</TributoFederal>
+          <TributoEstadual>0.992</TributoEstadual>
+          <MensagemPadrao>De acordo com o Decreto 13.116/2026 esta zerada a aliquota de PIS e Cofins sobre o etanol hidratado, vigente pelo periodo de 10/09/26 a 09/10/2026</MensagemPadrao>
+        </estado>
+      </tributos>
+    </combustivel>
+    <combustivel codigoANP="820101012|820101013">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2099-05-31">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.321</TributoFederal>
+          <TributoEstadual>1.17</TributoEstadual>
+          <PercentualMistura>15</PercentualMistura>
+          <MensagemPadrao>Com a perda da validade da MP 1.175, a trib. federal sobre o diesel foi reestabelecida a um impacto de aproximadamente R$ 0,321 por litro</MensagemPadrao>
+        </estado>
+      </tributos>
+    </combustivel>
+    <combustivel codigoANP="820101033|820101034">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2099-05-31">
+        <estado ufAtendida="AC|AL|AM|AP|BA|CE|DF|ES|GO|MA|MG|MS|MT|PA|PB|PE|PI|PR|RJ|RN|RO|RR|RS|SC|SE|SP|TO">
+          <TributoFederal>0.321</TributoFederal>
+          <TributoEstadual>1.17</TributoEstadual>
+          <PercentualMistura>15</PercentualMistura>
+          <MensagemPadrao>Com a perda da validade da MP 1.175, a trib. federal sobre o diesel foi reestabelecida a um impacto de aproximadamente R$ 0,321 por litro</MensagemPadrao>
+        </estado>
+      </tributos>
+    </combustivel>
+    <combustivel codigoANP="220101005|220101006">
+      <tributos dataInicioVigencia="2026-09-01" dataFimVigencia="2026-09-30">
+        <estado ufAtendida="AC">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="AL">
+          <PMPF>4.5764</PMPF>
+          <PercentualICMS>13</PercentualICMS>
+          <TributoFederal>0.4233</TributoFederal>
+          <TributoEstadual>0.5949</TributoEstadual>
+        </estado>
+        <estado ufAtendida="AM">
+          <PMPF>3.3728</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.312</TributoFederal>
+          <TributoEstadual>0.6071</TributoEstadual>
+        </estado>
+        <estado ufAtendida="AP">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="BA">
+          <PMPF>3.694</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.3417</TributoFederal>
+          <TributoEstadual>0.4433</TributoEstadual>
+        </estado>
+        <estado ufAtendida="CE">
+          <PMPF>5.1334</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4748</TributoFederal>
+          <TributoEstadual>0.924</TributoEstadual>
+        </estado>
+        <estado ufAtendida="DF">
+          <PMPF>6.78</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.6272</TributoFederal>
+          <TributoEstadual>1.2204</TributoEstadual>
+        </estado>
+        <estado ufAtendida="ES">
+          <PMPF>4.3478</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.4022</TributoFederal>
+          <TributoEstadual>0.7391</TributoEstadual>
+        </estado>
+        <estado ufAtendida="GO">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="MA">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="MG">
+          <PMPF>5.1343</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4749</TributoFederal>
+          <TributoEstadual>0.9242</TributoEstadual>
+        </estado>
+        <estado ufAtendida="MS">
+          <PMPF>4.4623</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.4128</TributoFederal>
+          <TributoEstadual>0.7586</TributoEstadual>
+        </estado>
+        <estado ufAtendida="MT">
+          <PMPF>4.0497</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.3746</TributoFederal>
+          <TributoEstadual>0.6884</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PA">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="PB">
+          <PMPF>5.0605</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4681</TributoFederal>
+          <TributoEstadual>0.9109</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PE">
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.1921</TributoFederal>
+          <TributoEstadual>0.2492</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PI">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="PR">
+          <PMPF>4.755</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4398</TributoFederal>
+          <TributoEstadual>0.5706</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RJ">
+          <PMPF>4.56</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4218</TributoFederal>
+          <TributoEstadual>0.5472</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RN">
+          <PMPF>5.03</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4653</TributoFederal>
+          <TributoEstadual>0.9054</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RO">
+          <PercentualICMS>17.5</PercentualICMS>
+        </estado>
+        <estado ufAtendida="RR">
+          <PercentualICMS>20</PercentualICMS>
+        </estado>
+        <estado ufAtendida="RS">
+          <PMPF>5.3406</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.494</TributoFederal>
+          <TributoEstadual>0.6409</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SC">
+          <PMPF>4.7748</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4417</TributoFederal>
+          <TributoEstadual>0.573</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SE">
+          <PMPF>4.807</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4446</TributoFederal>
+          <TributoEstadual>0.5768</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SP">
+          <PercentualICMS>15.6</PercentualICMS>
+          <TributoFederal>0.4514</TributoFederal>
+          <TributoEstadual>0.7613</TributoEstadual>
+        </estado>
+        <estado ufAtendida="TO">
+          <PercentualICMS>20</PercentualICMS>
+        </estado>
+      </tributos>
+      <tributos dataInicioVigencia="2026-10-01" dataFimVigencia="2050-01-01">
+        <estado ufAtendida="AC">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="AL">
+          <PMPF>4.4631</PMPF>
+          <PercentualICMS>13</PercentualICMS>
+          <TributoFederal>0.4128</TributoFederal>
+          <TributoEstadual>0.5802</TributoEstadual>
+        </estado>
+        <estado ufAtendida="AM">
+          <PMPF>3.381</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.3127</TributoFederal>
+          <TributoEstadual>0.6086</TributoEstadual>
+        </estado>
+        <estado ufAtendida="AP">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="BA">
+          <PMPF>3.694</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.3417</TributoFederal>
+          <TributoEstadual>0.4433</TributoEstadual>
+        </estado>
+        <estado ufAtendida="CE">
+          <PMPF>5.1334</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4748</TributoFederal>
+          <TributoEstadual>0.924</TributoEstadual>
+        </estado>
+        <estado ufAtendida="DF">
+          <PMPF>6.78</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.6272</TributoFederal>
+          <TributoEstadual>1.2204</TributoEstadual>
+        </estado>
+        <estado ufAtendida="ES">
+          <PMPF>4.4795</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.4144</TributoFederal>
+          <TributoEstadual>0.7615</TributoEstadual>
+        </estado>
+        <estado ufAtendida="GO">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="MA">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="MG">
+          <PMPF>5.1447</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4759</TributoFederal>
+          <TributoEstadual>0.926</TributoEstadual>
+        </estado>
+        <estado ufAtendida="MS">
+          <PMPF>4.5776</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.4234</TributoFederal>
+          <TributoEstadual>0.7782</TributoEstadual>
+        </estado>
+        <estado ufAtendida="MT">
+          <PMPF>3.8069</PMPF>
+          <PercentualICMS>17</PercentualICMS>
+          <TributoFederal>0.3521</TributoFederal>
+          <TributoEstadual>0.6472</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PA">
+          <PercentualICMS>17</PercentualICMS>
+        </estado>
+        <estado ufAtendida="PB">
+          <PMPF>5.0573</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4678</TributoFederal>
+          <TributoEstadual>0.9103</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PE">
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.1921</TributoFederal>
+          <TributoEstadual>0.2492</TributoEstadual>
+        </estado>
+        <estado ufAtendida="PI">
+          <PercentualICMS>18</PercentualICMS>
+        </estado>
+        <estado ufAtendida="PR">
+          <PMPF>4.7651</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4408</TributoFederal>
+          <TributoEstadual>0.5718</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RJ">
+          <PMPF>4.48</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4144</TributoFederal>
+          <TributoEstadual>0.5376</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RN">
+          <PMPF>5.03</PMPF>
+          <PercentualICMS>18</PercentualICMS>
+          <TributoFederal>0.4653</TributoFederal>
+          <TributoEstadual>0.9054</TributoEstadual>
+        </estado>
+        <estado ufAtendida="RO">
+          <PercentualICMS>17.5</PercentualICMS>
+        </estado>
+        <estado ufAtendida="RR">
+          <PercentualICMS>20</PercentualICMS>
+        </estado>
+        <estado ufAtendida="RS">
+          <PMPF>5.3458</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4945</TributoFederal>
+          <TributoEstadual>0.6415</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SC">
+          <PMPF>4.7648</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4407</TributoFederal>
+          <TributoEstadual>0.5718</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SE">
+          <PMPF>4.809</PMPF>
+          <PercentualICMS>12</PercentualICMS>
+          <TributoFederal>0.4448</TributoFederal>
+          <TributoEstadual>0.5771</TributoEstadual>
+        </estado>
+        <estado ufAtendida="SP">
+          <PercentualICMS>15.6</PercentualICMS>
+          <TributoFederal>0.4847</TributoFederal>
+          <TributoEstadual>0.8174</TributoEstadual>
+        </estado>
+        <estado ufAtendida="TO">
+          <PercentualICMS>20</PercentualICMS>
+        </estado>
+      </tributos>
+    </combustivel>
+  </combustiveis>
+  <produtos />
+</TransparenciaTributos>
