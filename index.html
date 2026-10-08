@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transparência Tributos – Combustíveis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#dfe3ea;--acc:#1f6feb;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff7c2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--card:#171b23;--fg:#e6e9ef;--muted:#9aa3b2;--line:#2a303c;--acc:#4c8dff;--acc2:#1b2638;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1200px;margin:auto}
+h1{font-size:22px;margin:0 0 4px}
+header p{margin:0;color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:8px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+.card h2{font-size:16px;margin:0 0 12px;display:flex;gap:8px;align-items:center}
+.step{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+input[type=file]{padding:5px}
+textarea{width:100%;min-height:60px;resize:vertical}
+button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:8px 14px;cursor:pointer}
+button.sec{background:transparent;color:var(--acc)}
+button:disabled{opacity:.5;cursor:default}
+.hint{font-size:12px;color:var(--muted)}
+.msg{padding:8px 12px;border-radius:6px;margin-top:10px;font-size:13px;white-space:pre-wrap}
+.msg.ok{background:var(--okbg);color:var(--ok)}.msg.warn{background:var(--warnbg);color:var(--warn)}.msg.bad{background:var(--badbg);color:var(--bad)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tabs button{background:transparent;color:var(--fg);border-color:var(--line)}
+.tabs button.on{background:var(--acc2);border-color:var(--acc);color:var(--acc)}
+.tabs .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;background:var(--line)}
+.tabs .dot.chg{background:var(--warn)}.tabs .dot.err{background:var(--bad)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:right;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;position:sticky;top:0;background:var(--card)}
+td:first-child,th:first-child{text-align:left}
+td input{width:90px;text-align:right;padding:4px 6px}
+td.chg input{background:var(--chg)}
+td.err input{outline:2px solid var(--bad)}
+.old{color:var(--muted);font-size:12px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;max-height:380px;overflow:auto;font-size:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Transparência de Tributos – Combustíveis</h1>
+  <p>Lê o PDF mensal da Fecombustíveis com IA gratuita (Google Gemini), compara com o XML atual e gera o XML novo com as vigências corretas, além da planilha Excel.</p>
+</header>
+<main>
+
+<section class="card">
+  <h2><span class="step">1</span>Configuração da IA</h2>
+  <div class="row">
+    <label style="flex:1;min-width:260px">Chave da API Gemini (gratuita)
+      <input id="apiKey" type="password" placeholder="Cole sua chave do Google AI Studio" autocomplete="off">
+    </label>
+    <label style="min-width:240px">Modelo
+      <input id="model" list="models" placeholder="ex.: gemini-flash-latest">
+      <datalist id="models"></datalist>
+    </label>
+    <button class="sec" id="btnModels">Carregar modelos</button>
+  </div>
+  <p class="hint">Crie a chave grátis em <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Ela fica salva apenas neste navegador e é enviada somente ao Google.</p>
+  <div id="cfgMsg"></div>
+</section>
+
+<section class="card">
+  <h2><span class="step">2</span>Arquivos e vigência</h2>
+  <div class="grid2">
+    <label>PDF da Fecombustíveis (Carga tributária estadual)
+      <input id="pdf" type="file" accept="application/pdf">
+    </label>
+    <label>XML atual (TransparenciaTributos)
+      <input id="xmlFile" type="file" accept=".xml,text/xml">
+    </label>
+  </div>
+  <details style="margin-top:10px"><summary class="hint">…ou cole o XML atual</summary>
+    <textarea id="xmlText" rows="6" placeholder="<TransparenciaTributos>…"></textarea>
+  </details>
+  <div class="row" style="margin-top:12px">
+    <label>Início da nova vigência <input id="dtIni" type="date"></label>
+    <label>Fim da nova vigência <input id="dtFim" type="date" value="2050-01-01"></label>
+    <span class="hint" id="dtOld"></span>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <button id="btnIA">Extrair valores do PDF com IA</button>
+    <button class="sec" id="btnManual">Preencher a partir do XML atual (edição manual)</button>
+  </div>
+  <div id="stepMsg"></div>
+</section>
+
+<section class="card" id="revCard" hidden>
+  <h2><span class="step">3</span>Revisar valores <span class="pill" id="revInfo"></span></h2>
+  <p class="hint">Células em amarelo mudaram em relação ao XML atual (valor antigo abaixo). Bordas vermelhas indicam conta que não fecha (ex.: PMPF × alíquota ≠ ICMS). Confira com o PDF antes de gerar.</p>
+  <div class="tabs" id="tabs"></div>
+  <div id="tabBody"></div>
+</section>
+
+<section class="card" id="outCard" hidden>
+  <h2><span class="step">4</span>Gerar arquivos</h2>
+  <div class="row">
+    <button id="btnGen">Gerar XML</button>
+    <button class="sec" id="btnDlXml" disabled>Baixar XML</button>
+    <button class="sec" id="btnDlXlsx" disabled>Baixar Excel</button>
+    <button class="sec" id="btnCopy" disabled>Copiar XML</button>
+  </div>
+  <div id="genMsg"></div>
+  <pre id="xmlOut" hidden></pre>
+</section>
+
+</main>
+<script>
+"use strict";
+const UFS="AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO".split(" ");
+const PRODUTOS=[
+ {key:"gasolinaC",nome:"Gasolina C",codes:["320102001","320102002"],tipo:"unico"},
+ {key:"gasolinaPremium",nome:"Gasolina Premium",codes:["320102003","320102005"],tipo:"unico"},
+ {key:"etanol",nome:"Etanol hidratado",codes:["810101001","810101002","810101003"],tipo:"uf"},
+ {key:"dieselS500",nome:"Diesel S-500",codes:["820101012","820101013"],tipo:"unico"},
+ {key:"dieselS10",nome:"Diesel S-10",codes:["820101033","820101034"],tipo:"unico"},
+ {key:"gnv",nome:"GNV",codes:["220101005","220101006"],tipo:"uf"}
+];
+const $=id=>document.getElementById(id);
+const S={xml:null,atual:{},novo:null,msgs:{},tab:"gasolinaC",out:null};
+
+/* ---------- storage ---------- */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+$("apiKey").value=store.get("gemKey")||"";
+$("model").value=store.get("gemModel")||"gemini-flash-latest";
+$("apiKey").onchange=()=>store.set("gemKey",$("apiKey").value.trim());
+$("model").onchange=()=>store.set("gemModel",$("model").value.trim());
+
+function msg(el,txt,cls){$(el).innerHTML=txt?`<div class="msg ${cls||"ok"}"></div>`:"";if(txt)$(el).firstChild.textContent=txt;}
+
+/* ---------- utils ---------- */
+const num=v=>{if(v===null||v===undefined||v==="")return null;const n=typeof v==="number"?v:parseFloat(String(v).replace("%","").replace(",","."));return isFinite(n)?n:null;};
+const fmt=v=>{const n=num(v);if(n===null)return null;return String(+n.toFixed(4));};
+const same=(a,b)=>{const x=num(a),y=num(b);if(x===null||y===null)return x===y;return Math.abs(x-y)<1e-9;};
+function addDays(iso,d){const t=new Date(iso+"T12:00:00Z");t.setUTCDate(t.getUTCDate()+d);return t.toISOString().slice(0,10);}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const escA=s=>esc(s).replace(/"/g,"&quot;");
+function updDtOld(){const v=$("dtIni").value;$("dtOld").textContent=v?`Blocos antigos que mudarem terminarão em ${addDays(v,-1).split("-").reverse().join("/")}`:"";}
+$("dtIni").onchange=updDtOld;
+(function(){const d=new Date();$("dtIni").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;updDtOld();})();
+
+/* ---------- XML model ---------- */
+function parseXml(text){
+  const doc=new DOMParser().parseFromString(text,"application/xml");
+  if(doc.getElementsByTagName("parsererror").length)throw new Error("XML inválido: verifique o arquivo.");
+  const root=doc.documentElement;
+  const combs=[...root.getElementsByTagName("combustivel")].map(c=>({
+    codigoANP:c.getAttribute("codigoANP")||"",
+    tributos:[...c.getElementsByTagName("tributos")].map(t=>({
+      ini:t.getAttribute("dataInicioVigencia")||"",fim:t.getAttribute("dataFimVigencia")||"",
+      estados:[...t.getElementsByTagName("estado")].map(e=>({uf:e.getAttribute("ufAtendida")||"",
+        campos:[...e.children].map(f=>[f.tagName,f.textContent])}))
+    }))
+  }));
+  const prod=root.getElementsByTagName("produtos")[0];
+  const produtosXml=(prod&&prod.childNodes.length&&prod.textContent.trim()!=="")||(prod&&prod.children.length)?new XMLSerializer().serializeToString(prod).replace(/ xmlns="[^"]*"/,""):"<produtos />";
+  return {root:root.tagName,combs,produtosXml};
+}
+function blocoAtual(comb,ini){
+  const ts=comb.tributos;if(!ts.length)return null;
+  const cobre=ts.filter(t=>t.ini<=ini&&(!t.fim||t.fim>=ini));
+  const pool=cobre.length?cobre:ts;
+  return pool.reduce((a,b)=>b.ini>a.ini?b:a);
+}
+const prodDe=comb=>PRODUTOS.find(p=>comb.codigoANP.split("|").some(c=>p.codes.includes(c.trim())));
+const campo=(est,tag)=>{const f=est.campos.find(c=>c[0]===tag);return f?f[1]:null;};
+
+function extrairAtual(model,ini){
+  const atual={},msgs={};
+  for(const comb of model.combs){
+    const p=prodDe(comb);if(!p)continue;
+    const b=blocoAtual(comb,ini);if(!b)continue;
+    let m=null;for(const e of b.estados){const x=campo(e,"MensagemPadrao");if(x){m=x;break;}}
+    msgs[p.key]=m||"";
+    if(p.tipo==="unico"){const e=b.estados[0];
+      atual[p.key]={federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual")),mistura:num(campo(e,"PercentualMistura"))};
+    }else{
+      atual[p.key]=b.estados.map(e=>({uf:e.uf,pmpf:num(campo(e,"PMPF")),aliquota:num(campo(e,"PercentualICMS")),federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual"))}));
+    }
+  }
+  return {atual,msgs};
+}
+
+/* ---------- Gemini ---------- */
+const PROMPT=`Você receberá o PDF mensal "Tributação dos Combustíveis por Estado" da Fecombustíveis. As tabelas estão como imagens; leia-as com atenção dígito a dígito. Valores em R$/litro (GNV em R$/m³). Use ponto como separador decimal.
+
+Retorne SOMENTE um JSON neste formato exato:
+{
+ "dataReferencia": "AAAA-MM-DD",
+ "gasolinaC": {"federal": n, "estadual": n, "mistura": n},
+ "gasolinaPremium": {"federal": n, "estadual": n, "mistura": n},
+ "dieselS500": {"federal": n, "estadual": n, "mistura": n},
+ "dieselS10": {"federal": n, "estadual": n, "mistura": n},
+ "etanol": [{"uf":"AC","aliquota": n,"pmpf": n,"estadual": n,"federal": n}, ... 27 UFs],
+ "gnv": [{"uf":"AC","aliquota": n,"pmpf": n|null,"estadual": n|null,"federal": n|null}, ... 27 UFs]
+}
+
+Regras:
+- dataReferencia: a data de "Referência" da capa.
+- Gasolina C / Gasolina Premium: federal = coluna "CIDE,PIS/COF" (Gaso C ou Gaso A Pr); estadual = coluna "ICMS TOTAL"; mistura = % de AEAC (ex.: 32 para 32%). Se os valores forem iguais para todas as UFs, use o valor único.
+- Diesel S-500 e S-10: federal = coluna "CIDE,PIS/COF"; estadual = "ICMS TOTAL"; mistura = % de Biodiesel (ex.: 15).
+- Etanol hidratado: para cada UF, aliquota = "ICMS %" (ex.: 12.86 para 12,86%), pmpf = coluna PMPF, estadual = "ICMS TOTAL" (4 casas), federal = "PIS/COFINS Etanol". Remova asteriscos da UF (ex.: "MT*" -> "MT").
+- GNV: para cada UF, aliquota = "ICMS Alíquota" em %, pmpf = coluna PMPF (null se em branco), estadual = "ICMS TOTAL" (R$/m³), federal = "PIS/COFINS GNV" (R$/m³). Se a linha estiver em branco, use null. Remova asteriscos da UF.
+- Não arredonde: copie o número com as casas decimais mostradas. Liste as 27 UFs em ordem alfabética.`;
+
+async function listarModelos(){
+  const key=$("apiKey").value.trim();if(!key)return msg("cfgMsg","Informe a chave primeiro.","warn");
+  store.set("gemKey",key);
+  try{
+    const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":key}});
+    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
+    const ms=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")&&/gemini/i.test(m.name)).map(m=>m.name.replace("models/",""));
+    ms.sort((a,b)=>(/flash/.test(b)-/flash/.test(a))||(/lite|tts|image|live|embed/.test(a)-/lite|tts|image|live|embed/.test(b))||b.localeCompare(a,undefined,{numeric:true}));
+    $("models").innerHTML=ms.map(m=>`<option value="${escA(m)}">`).join("");
+    if(!ms.includes($("model").value)&&ms.length){$("model").value=ms[0];store.set("gemModel",ms[0]);}
+    msg("cfgMsg",`Chave válida. ${ms.length} modelos disponíveis (sugestão: um modelo "flash").`,"ok");
+  }catch(e){msg("cfgMsg","Não foi possível listar modelos: "+e.message,"bad");}
+}
+$("btnModels").onclick=listarModelos;
+
+const b64=file=>new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=err;r.readAsDataURL(file);});
+
+async function chamarGemini(pdfB64){
+  const key=$("apiKey").value.trim(),model=$("model").value.trim()||"gemini-flash-latest";
+  if(!key)throw new Error("Informe a chave da API Gemini no passo 1.");
+  store.set("gemKey",key);store.set("gemModel",model);
+  const body={contents:[{role:"user",parts:[{inline_data:{mime_type:"application/pdf",data:pdfB64}},{text:PROMPT}]}],
+    generationConfig:{temperature:0,responseMimeType:"application/json"}};
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+    {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const m=j.error?.message||("HTTP "+r.status);throw new Error(r.status===429?"Limite gratuito atingido no momento (429). Aguarde um minuto e tente de novo.\n"+m:m);}
+  const txt=(j.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought&&p.text).map(p=>p.text).join("");
+  if(!txt)throw new Error("A IA não retornou conteúdo. Tente outro modelo.");
+  const clean=txt.replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"").trim();
+  return JSON.parse(clean);
+}
+
+function normalizar(d){
+  const o={dataReferencia:d.dataReferencia||null};
+  for(const p of PRODUTOS){
+    if(p.tipo==="unico"){const x=d[p.key]||{};o[p.key]={federal:num(x.federal),estadual:num(x.estadual),mistura:num(x.mistura)};}
+    else{const arr=Array.isArray(d[p.key])?d[p.key]:[];
+      o[p.key]=UFS.map(uf=>{const x=arr.find(r=>String(r.uf||"").replace(/\W/g,"").toUpperCase()===uf)||{};
+        let a=num(x.aliquota);if(a!==null&&a>0&&a<1)a=+(a*100).toFixed(4);
+        return {uf,pmpf:num(x.pmpf),aliquota:a,federal:num(x.federal),estadual:num(x.estadual)};});}
+  }
+  return o;
+}
+
+/* ---------- carregar XML ---------- */
+async function lerXml(){
+  let t=$("xmlText").value.trim();
+  if(!t&&$("xmlFile").files[0])t=await $("xmlFile").files[0].text();
+  if(!t)throw new Error("Selecione ou cole o XML atual.");
+  S.xml=parseXml(t);
+  const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;
+}
+function clonar(o){return JSON.parse(JSON.stringify(o));}
+
+$("btnManual").onclick=async()=>{
+  try{await lerXml();S.novo=clonar(S.atual);
+    for(const p of PRODUTOS)if(p.tipo==="uf"&&!S.novo[p.key])S.novo[p.key]=UFS.map(uf=>({uf,pmpf:null,aliquota:null,federal:null,estadual:null}));
+    msg("stepMsg","XML carregado. Edite os valores olhando o PDF.","ok");abrirRevisao("manual");
+  }catch(e){msg("stepMsg",e.message,"bad");}
+};
+$("btnIA").onclick=async()=>{
+  const btn=$("btnIA");
+  try{
+    await lerXml();
+    const f=$("pdf").files[0];if(!f)throw new Error("Selecione o PDF da Fecombustíveis.");
+    btn.disabled=true;msg("stepMsg","Enviando PDF para a IA… (pode levar até 1 minuto)","warn");
+    const raw=await chamarGemini(await b64(f));
+    S.novo=normalizar(raw);
+    if(S.novo.dataReferencia&&/^\d{4}-\d{2}-\d{2}$/.test(S.novo.dataReferencia)){$("dtIni").value=S.novo.dataReferencia;updDtOld();
+      const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;}
+    msg("stepMsg","Valores extraídos. Revise abaixo antes de gerar — a IA pode errar dígitos.","ok");
+    abrirRevisao("IA");
+  }catch(e){msg("stepMsg",e.message,"bad");}
+  finally{btn.disabled=false;}
+};
+
+/* ---------- validação / diffs ---------- */
+function checks(p,row){
+  const err={};
+  if(p.tipo!=="uf")return err;
+  if(row.pmpf!==null&&row.aliquota!==null&&row.estadual!==null){
+    const base=(p.key==="etanol"&&row.uf==="MT")?row.pmpf*0.5:row.pmpf;
+    if(Math.abs(base*row.aliquota/100-row.estadual)>0.0015)err.estadual=true;
+  }
+  if(p.key==="gnv"&&row.pmpf!==null&&row.federal!==null&&Math.abs(row.pmpf*0.0925-row.federal)>0.0015)err.federal=true;
+  if(row.aliquota===null)err.aliquota=true;
+  if(p.key==="etanol"){for(const k of["pmpf","estadual","federal"])if(row[k]===null)err[k]=true;}
+  return err;
+}
+function linhaAntiga(p,uf){const a=S.atual[p.key];if(!a)return null;return p.tipo==="unico"?a:(a.find(r=>r.uf===uf)||null);}
+function statusProduto(p){
+  let chg=false,err=false;const n=S.novo[p.key];
+  if(p.tipo==="unico"){const a=linhaAntiga(p);for(const k of["federal","estadual","mistura"])if(!a||!same(a[k],n[k]))chg=true;
+    for(const k of["federal","estadual","mistura"])if(n[k]===null)err=true;}
+  else for(const r of n){const a=linhaAntiga(p,r.uf);for(const k of["pmpf","aliquota","federal","estadual"])if(!a||!same(a[k],r[k]))chg=true;
+    if(Object.keys(checks(p,r)).length)err=true;}
+  if((S.msgOverride||{})[p.key]!==undefined&&S.msgOverride[p.key]!==S.msgs[p.key])chg=true;
+  return {chg,err};
+}
+
+/* ---------- revisão UI ---------- */
+function abrirRevisao(origem){
+  S.msgOverride={...S.msgs};
+  $("revCard").hidden=false;$("outCard").hidden=false;$("revInfo").textContent="origem: "+origem;
+  S.out=null;$("xmlOut").hidden=true;["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=true);msg("genMsg","");
+  render();
+}
+function render(){
+  $("tabs").innerHTML=PRODUTOS.map(p=>{const s=statusProduto(p);return `<button data-k="${p.key}" class="${S.tab===p.key?"on":""}">${p.nome}<span class="dot ${s.err?"err":s.chg?"chg":""}"></span></button>`}).join("");
+  $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.k;render();});
+  const p=PRODUTOS.find(x=>x.key===S.tab),n=S.novo[p.key];
+  const cell=(val,old,k,i,bad)=>{const c=!same(val,old);return `<td class="${c?"chg":""} ${bad?"err":""}"><input data-k="${k}" data-i="${i}" value="${val===null?"":fmt(val)}">${c?`<div class="old">antes: ${old===null||old===undefined?"—":fmt(old)}</div>`:""}</td>`;};
+  let h;
+  if(p.tipo==="unico"){const a=linhaAntiga(p)||{};
+    h=`<table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table>`;
+  }else{
+    const pm=p.key==="gnv"?"PMPF (R$/m³)":"PMPF (R$/L)";
+    h=`<div class="tw"><table><tr><th>UF</th><th>Alíquota ICMS %</th><th>${pm}</th><th>ICMS (R$)</th><th>Federal PIS/COFINS (R$)</th><th>Total</th></tr>`+
+      n.map((r,i)=>{const a=linhaAntiga(p,r.uf)||{},e=checks(p,r);
+        return `<tr><td>${r.uf}</td>${cell(r.aliquota,a.aliquota,"aliquota",i,e.aliquota)}${cell(r.pmpf,a.pmpf,"pmpf",i,e.pmpf)}${cell(r.estadual,a.estadual,"estadual",i,e.estadual)}${cell(r.federal,a.federal,"federal",i,e.federal)}<td>${r.estadual!==null?((r.estadual||0)+(r.federal||0)).toFixed(3):""}</td></tr>`}).join("")+`</table></div>`;
+  }
+  h+=`<label style="margin-top:12px">MensagemPadrao (${p.nome})<textarea id="msgEdit">${esc(S.msgOverride[p.key]||"")}</textarea></label>`;
+  $("tabBody").innerHTML=h;
+  $("tabBody").querySelectorAll("td input").forEach(inp=>inp.onchange=()=>{
+    const k=inp.dataset.k,i=+inp.dataset.i,v=num(inp.value);
+    if(i<0)n[k]=v;else n[i][k]=v;
+    S.out=null;render();});
+  $("msgEdit").onchange=e=>{S.msgOverride[p.key]=e.target.value;S.out=null;render();};
+}
+
+/* ---------- geração XML ---------- */
+function novosEstados(p,tpl,novo,mensagem){
+  if(p.tipo==="unico"){
+    return tpl.estados.map(e=>({uf:e.uf,campos:(()=>{
+      const tags=e.campos.map(c=>c[0]);const order=["TributoFederal","TributoEstadual","PercentualMistura","MensagemPadrao"];
+      const all=[...new Set([...tags,...order.filter(t=>t!=="MensagemPadrao"||mensagem)])];
+      return all.map(t=>{if(t==="TributoFederal")return[t,fmt(novo.federal)];if(t==="TributoEstadual")return[t,fmt(novo.estadual)];
+        if(t==="PercentualMistura")return[t,fmt(novo.mistura)];if(t==="MensagemPadrao")return mensagem?[t,mensagem]:null;
+        return e.campos.find(c=>c[0]===t);}).filter(c=>c&&c[1]!==null);})()}));
+  }
+  const tinha=tpl.estados.some(e=>campo(e,"MensagemPadrao"));
+  return novo.map(r=>{const c=[];
+    if(r.pmpf!==null)c.push(["PMPF",fmt(r.pmpf)]);
+    if(r.aliquota!==null)c.push(["PercentualICMS",fmt(r.aliquota)]);
+    if(r.federal!==null)c.push(["TributoFederal",fmt(r.federal)]);
+    if(r.estadual!==null)c.push(["TributoEstadual",fmt(r.estadual)]);
+    if(mensagem&&(tinha||p.key!=="gnv"))c.push(["MensagemPadrao",mensagem]);
+    return {uf:r.uf,campos:c};});
+}
+const assin=ests=>JSON.stringify(ests.map(e=>[e.uf,e.campos.map(([t,v])=>[t,num(v)!==null&&t!=="MensagemPadrao"?num(v):v])]));
+
+function gerar(){
+  const ini=$("dtIni").value,fim=$("dtFim").value;
+  if(!ini||!fim)throw new Error("Informe as datas de vigência.");
+  if(fim<=ini)throw new Error("A data final deve ser maior que a inicial.");
+  const fimAnt=addDays(ini,-1);
+  const model=clonar(S.xml);const log=[];
+  for(const comb of model.combs){
+    const p=prodDe(comb);if(!p){log.push(`• ${comb.codigoANP}: não reconhecido — mantido sem alteração.`);continue;}
+    const tpl=blocoAtual(comb,ini);if(!tpl){log.push(`• ${p.nome}: sem bloco <tributos> — ignorado.`);continue;}
+    const mensagem=S.msgOverride[p.key]||"";
+    const est=novosEstados(p,tpl,S.novo[p.key],mensagem);
+    if(assin(est)===assin(tpl.estados)){log.push(`• ${p.nome}: sem mudança — mantido.`);continue;}
+    if(tpl.ini>=ini){tpl.estados=est;tpl.fim=fim;log.push(`• ${p.nome}: já havia bloco iniciando em ${tpl.ini} — valores substituídos nele.`);continue;}
+    tpl.fim=fimAnt;
+    const idx=comb.tributos.indexOf(tpl);
+    comb.tributos.splice(idx+1,0,{ini,fim,estados:est});
+    log.push(`• ${p.nome}: ALTERADO — antigo até ${fimAnt}, novo de ${ini} até ${fim}.`);
+  }
+  return {xml:serializar(model),log};
+}
+function serializar(m){
+  const L=[`<${m.root}>`,"  <combustiveis>"];
+  for(const c of m.combs){
+    L.push(`    <combustivel codigoANP="${escA(c.codigoANP)}">`);
+    for(const t of c.tributos){
+      L.push(`      <tributos dataInicioVigencia="${escA(t.ini)}" dataFimVigencia="${escA(t.fim)}">`);
+      for(const e of t.estados){
+        L.push(`        <estado ufAtendida="${escA(e.uf)}">`);
+        for(const [tag,v] of e.campos)L.push(`          <${tag}>${esc(v)}</${tag}>`);
+        L.push("        </estado>");
+      }
+      L.push("      </tributos>");
+    }
+    L.push("    </combustivel>");
+  }
+  L.push("  </combustiveis>",`  ${m.produtosXml}`,`</${m.root}>`);
+  return L.join("\n")+"\n";
+}
+
+$("btnGen").onclick=()=>{
+  try{
+    const errs=PRODUTOS.filter(p=>statusProduto(p).err).map(p=>p.nome);
+    const r=gerar();S.out=r.xml;
+    $("xmlOut").hidden=false;$("xmlOut").textContent=r.xml;
+    ["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=false);
+    msg("genMsg",(errs.length?`Atenção: há valores a conferir em ${errs.join(", ")}.\n`:"")+r.log.join("\n"),errs.length?"warn":"ok");
+  }catch(e){msg("genMsg",e.message,"bad");}
+};
+function baixar(nome,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+const tag=()=>$("dtIni").value.replace(/-/g,"");
+$("btnDlXml").onclick=()=>baixar(`TransparenciaTributos_${tag()}.xml`,new Blob([S.out],{type:"application/xml"}));
+$("btnCopy").onclick=async()=>{try{await navigator.clipboard.writeText(S.out);msg("genMsg","XML copiado.","ok");}catch(e){msg("genMsg","Não foi possível copiar; use Baixar XML.","warn");}};
+
+/* ---------- Excel ---------- */
+$("btnDlXlsx").onclick=()=>{
+  if(typeof XLSX==="undefined")return msg("genMsg","Biblioteca do Excel não carregou (sem internet?).","bad");
+  const wb=XLSX.utils.book_new(),ini=$("dtIni").value,fim=$("dtFim").value;
+  const r4=v=>v===null?null:+(+v).toFixed(4);
+  for(const p of PRODUTOS){
+    const n=S.novo[p.key];let rows;
+    if(p.tipo==="unico"){
+      rows=[[p.nome,`Vigência ${ini} a ${fim}`],[],["UF","Federal (CIDE,PIS/COF)","ICMS TOTAL","% Mistura","Tributos TOTAL"]];
+      for(const uf of UFS)rows.push([uf,r4(n.federal),r4(n.estadual),n.mistura===null?null:n.mistura/100,n.federal!==null&&n.estadual!==null?+(n.federal+n.estadual).toFixed(3):null]);
+    }else{
+      rows=[[p.nome,`Vigência ${ini} a ${fim}`],[],["UF","ICMS %","PMPF","ICMS TOTAL","PIS/COFINS","Tributos TOTAL"]];
+      for(const r of n)rows.push([r.uf,r.aliquota===null?null:+(r.aliquota/100).toFixed(4),r4(r.pmpf),r4(r.estadual),r4(r.federal),r.estadual===null?null:+((r.estadual||0)+(r.federal||0)).toFixed(3)]);
+    }
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"]=[{wch:8},{wch:22},{wch:14},{wch:14},{wch:14},{wch:16}];
+    const pctCols=p.tipo==="unico"?["D"]:["B"];
+    for(let i=4;i<=rows.length;i++){for(const c of pctCols){const ref=c+i;if(ws[ref])ws[ref].z="0.00%";}
+      for(const c of["B","C","D","E","F"]){const ref=c+i;if(ws[ref]&&!pctCols.includes(c))ws[ref].z=c==="F"||(p.tipo==="unico"&&c==="E")?"0.000":"0.0000";}}
+    XLSX.utils.book_append_sheet(wb,ws,p.nome.slice(0,31));
+  }
+  if(S.msgOverride){const ws=XLSX.utils.aoa_to_sheet([["Produto","MensagemPadrao"],...PRODUTOS.map(p=>[p.nome,S.msgOverride[p.key]||""])]);ws["!cols"]=[{wch:18},{wch:120}];XLSX.utils.book_append_sheet(wb,ws,"Mensagens");}
+  XLSX.writeFile(wb,`${tag()}.xlsx`);
+};
+</script>
+</body>
+</html>
