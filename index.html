@@ -230,20 +230,46 @@ $("btnModels").onclick=listarModelos;
 
 const b64=file=>new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=err;r.readAsDataURL(file);});
 
+const dormir=ms=>new Promise(r=>setTimeout(r,ms));
+const FALLBACKS=["gemini-flash-latest","gemini-flash-lite-latest","gemini-2.5-flash","gemini-2.5-flash-lite"];
+async function chamarModelo(key,model,body){
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+    {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(j.error?.message||("HTTP "+r.status));e.status=r.status;throw e;}
+  const txt=(j.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought&&p.text).map(p=>p.text).join("");
+  if(!txt){const e=new Error("A IA não retornou conteúdo.");e.status=0;throw e;}
+  return JSON.parse(txt.replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"").trim());
+}
 async function chamarGemini(pdfB64){
   const key=$("apiKey").value.trim(),model=$("model").value.trim()||"gemini-flash-latest";
   if(!key)throw new Error("Informe a chave da API Gemini no passo 1.");
   store.set("gemKey",key);store.set("gemModel",model);
   const body={contents:[{role:"user",parts:[{inline_data:{mime_type:"application/pdf",data:pdfB64}},{text:PROMPT}]}],
     generationConfig:{temperature:0,responseMimeType:"application/json"}};
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-    {method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify(body)});
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok){const m=j.error?.message||("HTTP "+r.status);throw new Error(r.status===429?"Limite gratuito atingido no momento (429). Aguarde um minuto e tente de novo.\n"+m:m);}
-  const txt=(j.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought&&p.text).map(p=>p.text).join("");
-  if(!txt)throw new Error("A IA não retornou conteúdo. Tente outro modelo.");
-  const clean=txt.replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"").trim();
-  return JSON.parse(clean);
+  // modelo escolhido primeiro; depois outros "flash" disponíveis na conta
+  const lista=[...$("models").options].map(o=>o.value).filter(m=>/flash/.test(m)&&!/tts|image|live|audio/.test(m));
+  const modelos=[...new Set([model,...lista,...FALLBACKS])].slice(0,4);
+  let ultimo;
+  for(const m of modelos){
+    for(let t=1;t<=3;t++){
+      try{
+        msg("stepMsg",`Consultando ${m} (tentativa ${t}/3)…`,"warn");
+        const res=await chamarModelo(key,m,body);
+        if(m!==model)msg("stepMsg",`Modelo ${model} indisponível; usado ${m}.`,"warn");
+        return res;
+      }catch(e){
+        ultimo=e;
+        if(e.status===400||e.status===401||e.status===403)throw new Error("Chave ou requisição inválida: "+e.message);
+        if(e.status===404)break; // modelo não existe nesta conta → próximo
+        if(e instanceof SyntaxError)break; // JSON inválido → tenta outro modelo
+        const espera=(e.status===429?20000:5000)*t;
+        msg("stepMsg",`${m}: ${e.status===503?"modelo sobrecarregado":e.status===429?"limite por minuto atingido":e.message}. Nova tentativa em ${espera/1000}s…`,"warn");
+        await dormir(espera);
+      }
+    }
+  }
+  throw new Error("Não foi possível usar a IA agora (Google sobrecarregado ou limite atingido). Tente novamente em alguns minutos, escolha outro modelo no passo 1, ou use o preenchimento manual.\nÚltimo erro: "+(ultimo?.message||""));
 }
 
 function normalizar(d){
@@ -281,10 +307,11 @@ $("btnIA").onclick=async()=>{
     const f=$("pdf").files[0];if(!f)throw new Error("Selecione o PDF da Fecombustíveis.");
     btn.disabled=true;msg("stepMsg","Enviando PDF para a IA… (pode levar até 1 minuto)","warn");
     const raw=await chamarGemini(await b64(f));
+    const aviso=$("stepMsg").textContent.startsWith("Modelo ")?$("stepMsg").textContent+"\n":"";
     S.novo=normalizar(raw);
     if(S.novo.dataReferencia&&/^\d{4}-\d{2}-\d{2}$/.test(S.novo.dataReferencia)){$("dtIni").value=S.novo.dataReferencia;updDtOld();
       const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;}
-    msg("stepMsg","Valores extraídos. Revise abaixo antes de gerar — a IA pode errar dígitos.","ok");
+    msg("stepMsg",aviso+"Valores extraídos. Revise abaixo antes de gerar — a IA pode errar dígitos.","ok");
     abrirRevisao("IA");
   }catch(e){msg("stepMsg",e.message,"bad");}
   finally{btn.disabled=false;}
