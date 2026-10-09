@@ -41,7 +41,7 @@ jobs:
       - name: Montar site
         run: |
           mkdir -p _site pdf xml
-          cp -r index.html arquivos.json logo.svg imex-rodape.svg og-image.png sitemap.xml favicon.ico favicon-32.png apple-touch-icon.png .nojekyll exemplos pdf xml _site/
+          cp -r index.html tributos.html site.css tema.js arquivos.json logo.svg imex-rodape.svg og-image.png sitemap.xml favicon.ico favicon-32.png apple-touch-icon.png .nojekyll exemplos pdf xml _site/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

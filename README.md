@@ -3,7 +3,7 @@
 Site estático (GitHub Pages) que gera todo mês o XML `TransparenciaTributos` a partir do PDF
 "Carga tributária estadual" da [Fecombustíveis](https://www.fecombustiveis.org.br/tributacao).
 
-**Site:** https://imextecnologia.github.io/tributacao/
+**Site:** https://imextecnologia.github.io/tributacao/ · **Tributos por estado:** https://imextecnologia.github.io/tributacao/tributos.html
 
 ## Como funciona
 
@@ -40,11 +40,23 @@ O site evita chamar a IA sem necessidade:
 Para usar outros arquivos, abra **Enviar arquivos manualmente** no Passo 1 (escolha o PDF/XML ou cole o XML).
 Se a IA estiver indisponível, use **Preencher a partir do XML (edição manual)** e digite os valores olhando o PDF.
 
+## Página de tributos por estado
+
+`tributos.html` mostra a tributação dos combustíveis no formato da [página da Fecombustíveis](https://www.fecombustiveis.org.br/tributacao/tributos):
+
+- **Referência** (ex.: 01 Outubro de 2026), tirada da data do XML mais recente de `xml/`, com link para o PDF do mesmo mês;
+- **resumo** com a média Brasil de tributos totais, ICMS e PIS/COFINS + CIDE para gasolina, diesel, etanol e GNV;
+- **tabelas por estado** de Gasolina C, Gasolina Premium, Diesel S-500, Diesel S-10, Etanol hidratado e GNV.
+
+Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.
+
 ## Estrutura
 
 | Caminho | Conteúdo |
 |---|---|
-| `index.html` | O site inteiro (HTML, CSS e JavaScript) |
+| `index.html` | Gerador do XML (página principal) |
+| `tributos.html` | Tabela pública de tributos por estado, montada a partir do XML mais recente de `xml/` |
+| `site.css`, `tema.js` | Estilo e seletor de tema (claro/escuro/sistema) compartilhados pelas páginas |
 | `pdf/` | PDFs da Fecombustíveis (baixados pela busca automática) |
 | `xml/` | XMLs `TransparenciaTributos` de cada mês |
 | `exemplos/` | PDF de outubro/2026 e o XML gerado a partir dele, para conferência |

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tributos dos Combustíveis por Estado – ICMS, PIS/COFINS e CIDE | Imex</title>
+<meta name="description" content="Tabela atualizada da carga tributária dos combustíveis por estado: ICMS, PIS/COFINS e CIDE da gasolina, diesel, etanol hidratado e GNV nas 27 UFs, conforme a Fecombustíveis.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://imextecnologia.github.io/tributacao/tributos.html">
+<meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1016" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Imex">
+<meta property="og:title" content="Tributos dos Combustíveis por Estado | Imex">
+<meta property="og:description" content="ICMS, PIS/COFINS e CIDE da gasolina, diesel, etanol hidratado e GNV nas 27 UFs.">
+<meta property="og:url" content="https://imextecnologia.github.io/tributacao/tributos.html">
+<meta property="og:image" content="https://imextecnologia.github.io/tributacao/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+(function(){var t;try{t=localStorage.getItem("tema")}catch(e){}
+if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
+</script>
+<link rel="stylesheet" href="site.css">
+<style>
+:root{--gas:#f9a51a;--die:#2e3f9e;--eta:#0f5e2e;--gnv:#e6ff66;--tb-head:#46667f;--tb-uf:#dbe9f6;--tb-total:#fff36b;--tb-total-fg:#1d2330}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--die:#5a6fe0;--eta:#2fa35c;--tb-head:#2c4a62;--tb-uf:#1a2433;--tb-total:#4a4413;--tb-total-fg:#fff3a0}}
+:root[data-theme=dark]{--die:#5a6fe0;--eta:#2fa35c;--tb-head:#2c4a62;--tb-uf:#1a2433;--tb-total:#4a4413;--tb-total-fg:#fff3a0}
+.ref{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:4px}
+.ref strong{font-size:15px}
+.ref .btn-top{height:34px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips a{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:99px;color:var(--fg);text-decoration:none;font-size:13px;font-weight:500;background:var(--card)}
+.chips a:hover{border-color:var(--acc);color:var(--acc)}
+.chips i{width:10px;height:10px;border-radius:50%}
+/* resumo com as bombas */
+.resumo{width:100%;border-collapse:collapse;table-layout:fixed}
+.resumo th,.resumo td{border:1px solid var(--line);text-align:center;padding:10px 8px;white-space:normal}
+.resumo thead th{background:var(--tb-head);color:#fff;font-size:15px;font-weight:700;letter-spacing:.02em;position:static}
+.resumo thead th:first-child{background:transparent;border-top-color:transparent;border-left-color:transparent}
+.resumo .bombas td{padding:16px 8px}
+.resumo .bombas td:first-child{border-left-color:transparent;border-bottom-color:var(--line)}
+.resumo .bombas svg{width:72px;height:72px}
+.resumo tbody th{text-align:center;font-weight:400;color:var(--fg);font-size:13.5px;width:34%}
+.resumo tbody th b{font-weight:700}
+.resumo td{font-size:15px;font-variant-numeric:tabular-nums}
+.resumo tr.total td{font-weight:700}
+/* tabelas por estado */
+.tabelas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
+.tabela{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);scroll-margin-top:90px}
+.tabela h3{margin:0;padding:10px 14px;font-size:15px;text-align:center;background:var(--cor);color:var(--cor-fg)}
+.tabela .tw{border:0;border-radius:0;max-height:none}
+.tb{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px}
+.tb th,.tb td{border:1px solid var(--line);padding:5px 8px;text-align:center;white-space:nowrap}
+.tb thead th{background:var(--field);color:var(--fg);font-weight:700;font-size:12px;position:static;line-height:1.25;white-space:normal}
+.tb thead th small{display:block;font-weight:500;color:var(--muted)}
+.tb td:first-child,.tb th:first-child{text-align:center;font-weight:700}
+.tb tbody td:first-child{background:var(--tb-uf)}
+.tb .tot{background:var(--tb-total);color:var(--tb-total-fg);font-weight:700}
+.tb tbody tr:hover td{filter:brightness(.97)}
+.tb tr:last-child td{border-bottom:0}
+.tb tr td:first-child,.tb tr th:first-child{border-left:0}.tb tr td:last-child,.tb tr th:last-child{border-right:0}
+.tabela .msgs{padding:10px 14px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.tabela .msgs p{margin:0}.tabela .msgs p+p{margin-top:6px}
+.notas{font-size:12.5px;color:var(--muted);margin:0;padding-left:18px;display:grid;gap:4px}
+#erro:empty{display:none}
+@media (max-width:760px){
+  .resumo thead th{font-size:12px;padding:8px 2px}
+  .resumo .bombas svg{width:44px;height:44px}
+  .resumo tbody th{font-size:12px;width:30%}
+  .resumo .det{display:none}
+  .resumo td{font-size:13px;padding:8px 2px}
+}
+@media print{.top,.rodape,.chips,.aviso,.ref .btn-top{display:none}.card,.tabela{box-shadow:none;break-inside:avoid}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg class="marca" viewBox="277 198 1077 1235" role="img" aria-label="Imex"><g transform="translate(277 198)"><path fill="currentColor" d="M378,1010 L374,1019 L374,1029 L379,1039 L548,1207 L577,1222 L591,1225 L609,1225 L625,1221 L637,1215 L653,1200 L659,1189 L663,1176 L663,1029 L658,1017 L649,1007 L633,1001 L394,1001 L383,1005Z"/><path fill="currentColor" d="M31,171 L16,182 L10,196 L10,572 L16,617 L29,663 L40,689 L60,725 L78,750 L93,767 L321,994 L338,1001 L358,999 L367,994 L374,987 L381,971 L381,515 L376,473 L361,419 L342,376 L312,328 L290,301 L256,266 L219,236 L171,207 L122,186 L88,176 L49,169Z"/><path fill="#005BFC" d="M388,15 L380,22 L373,37 L373,278 L375,286 L381,297 L393,308 L409,313 L684,314 L685,797 L690,833 L699,868 L717,913 L734,944 L758,978 L804,1028 L848,1064 L879,1084 L925,1107 L972,1123 L1020,1132 L1039,1132 L1051,1128 L1061,1119 L1067,1106 L1067,772 L1062,732 L1051,689 L1034,647 L1018,618 L988,578 L431,19 L419,12 L410,10 L397,11Z"/></g></svg>
+      <p class="h1"><span class="imex">Imex</span><span class="sep">|</span>Transparência de Tributos – Combustíveis
+        <small>Atualização mensal do XML TransparenciaTributos a partir do PDF da Fecombustíveis</small></p>
+    </div>
+    <nav class="menu" aria-label="Páginas">
+      <a href="./">Gerador XML</a>
+      <a href="tributos.html" aria-current="page">Tributos por estado</a>
+    </nav>
+    <div class="acoes">
+      <a class="btn-top" href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener" title="Página de tributação da Fecombustíveis" aria-label="Fecombustíveis (abre em nova aba)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span class="txt">Fecombustíveis</span></a>
+      <a class="btn-top ico" href="https://github.com/imextecnologia/tributacao" target="_blank" rel="noopener" title="Código no GitHub" aria-label="GitHub (abre em nova aba)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+      <div class="tema" role="group" aria-label="Tema">
+        <button type="button" data-tema="light" title="Claro" aria-label="Tema claro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button>
+        <button type="button" data-tema="dark" title="Escuro" aria-label="Tema escuro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+        <button type="button" data-tema="system" title="Sistema" aria-label="Tema do sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+
+<section class="card">
+  <div class="card-h"><div>
+    <h1 style="font-size:20px">Tributação dos combustíveis por estado</h1>
+    <p>Tributos federais (PIS/COFINS e CIDE) e estaduais (ICMS) por litro, conforme a tabela de carga tributária da Fecombustíveis.</p>
+  </div></div>
+  <div class="ref">
+    <strong>Referência: <span id="ref">carregando…</span></strong>
+    <a class="btn-top" id="pdfLink" href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span class="txt">Baixar PDF da Fecombustíveis</span></a>
+  </div>
+  <div id="erro"></div>
+  <nav class="chips" id="chips" aria-label="Combustíveis"></nav>
+</section>
+
+<section class="card">
+  <div class="card-h"><div>
+    <h2>Resumo – média Brasil</h2>
+    <p>Média simples das UFs com valores, em R$ por litro (GNV em R$ por m³). Gasolina: gasolina C comum; diesel: S-10.</p>
+  </div></div>
+  <div class="tw" style="border:0;max-height:none"><table class="resumo" id="resumo"></table></div>
+</section>
+
+<div class="tabelas" id="tabelas"></div>
+
+<section class="card" style="margin-top:16px">
+  <ul class="notas">
+    <li>Valores em R$/litro (GNV em R$/m³), para produtos de produção nacional.</li>
+    <li>Gasolina: CIDE e PIS/COFINS proporcionais à mistura de etanol anidro, mais o PIS/COFINS do etanol anidro. Diesel B: PIS/COFINS proporcionais à mistura de biodiesel; CIDE zerada.</li>
+    <li>Etanol e GNV: ICMS = PMPF × alíquota (no MT o etanol tem base de 50% do PMPF). UFs em branco não têm comercialização de GNV.</li>
+    <li>Fonte: <a href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener">Fecombustíveis – Tributação</a>. Lei 12.741/2012 e Decreto 8.264/2014.</li>
+  </ul>
+</section>
+
+</main>
+<p class="aviso">Tabela gerada a partir do XML TransparenciaTributos mais recente — confira sempre com o PDF oficial.</p>
+<footer class="rodape">
+  <div class="rodape-in">
+    <div>
+      <a class="logo" href="https://imex.com.br/" target="_blank" rel="noopener"><img src="imex-rodape.svg" alt="IMEX — Powered by metanet | xpert" width="245" height="88"></a>
+      <p class="slogan">O maior sistema para<br>postos de combustíveis</p>
+    </div>
+    <div class="contato">
+      <p><span>E-mail:</span> <a href="mailto:contato@imex.com.br">contato@imex.com.br</a></p>
+      <p><span>Telefone:</span> <a href="tel:+554621010101">(46) 2101-0101</a></p>
+      <div class="redes">
+        <a href="https://www.instagram.com/imextecnologia/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg></a>
+        <a href="https://www.linkedin.com/company/imextecnologia/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3V9.75zM9.5 9.75h3.8v1.54h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.05c0-1.2-.02-2.75-1.68-2.75-1.68 0-1.94 1.31-1.94 2.66V21h-4V9.75z"/></svg></a>
+        <a href="https://www.youtube.com/@imextecnologia" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg></a>
+      </div>
+    </div>
+    <nav aria-label="Imex">
+      <a href="https://imex.com.br/xpert/" target="_blank" rel="noopener">xpert</a>
+      <a href="https://imex.com.br/metanet/" target="_blank" rel="noopener">Metanet</a>
+      <a href="https://imex.com.br/quem-somos/" target="_blank" rel="noopener">Quem somos</a>
+    </nav>
+    <nav aria-label="Institucional">
+      <a href="https://imex.com.br/blog/" target="_blank" rel="noopener">Blog</a>
+      <a href="https://imex.com.br/contato/" target="_blank" rel="noopener">Contato</a>
+      <a href="https://imex.com.br/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a>
+    </nav>
+  </div>
+</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const UFS="AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO".split(" ");
+const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const MESES_PDF=["JANEIRO","FEVEREIRO","MARCO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+const COMB=[
+  {k:"gasC",nome:"Gasolina C (comum ou aditivada)",codes:["320102001","320102002"],tipo:"gas",cor:"var(--gas)",fg:"#1d2330"},
+  {k:"gasP",nome:"Gasolina Premium",codes:["320102003","320102005"],tipo:"gas",cor:"var(--gas)",fg:"#1d2330"},
+  {k:"s500",nome:"Óleo Diesel B S-500",codes:["820101012","820101013"],tipo:"die",cor:"var(--die)",fg:"#fff"},
+  {k:"s10",nome:"Óleo Diesel B S-10",codes:["820101033","820101034"],tipo:"die",cor:"var(--die)",fg:"#fff"},
+  {k:"eta",nome:"Etanol Hidratado",codes:["810101001","810101002","810101003"],tipo:"uf",cor:"var(--eta)",fg:"#fff"},
+  {k:"gnv",nome:"GNV",codes:["220101005","220101006"],tipo:"uf",cor:"var(--gnv)",fg:"#1d2330",m3:true}
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>v===null||v===undefined||v===""||isNaN(v)?null:Number(v);
+const f=(v,d)=>v===null?"":v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=v=>v===null?"":`${v.toLocaleString("pt-BR",{maximumFractionDigits:2})}%`;
+const media=l=>{const v=l.filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+const BOMBA='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>';
+
+const dataDoXml=n=>{const m=n.match(/(\d{4})(\d{2})(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:"";};
+function dataDoPdf(n){
+  const m=n.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().match(/(\d{1,2})\s+([A-Z]+)\s+(\d{4})/);
+  const i=m?MESES_PDF.indexOf(m[2]):-1;return i<0?"":`${m[3]}-${String(i+1).padStart(2,"0")}-${m[1].padStart(2,"0")}`;
+}
+// valores em vigor na data de referência: {k:{UF:{federal,estadual,mistura,pmpf,aliquota}}, msgs:{k:[...]}}
+function extrair(doc,ref){
+  const out={},msgs={};
+  for(const c of doc.getElementsByTagName("combustivel")){
+    const codes=(c.getAttribute("codigoANP")||"").split("|");
+    const p=COMB.find(x=>x.codes.some(cd=>codes.includes(cd)));if(!p)continue;
+    const blocos=[...c.getElementsByTagName("tributos")].filter(t=>t.getAttribute("dataInicioVigencia")<=ref&&ref<=t.getAttribute("dataFimVigencia"))
+      .sort((a,b)=>b.getAttribute("dataInicioVigencia").localeCompare(a.getAttribute("dataInicioVigencia")));
+    if(!blocos.length)continue;
+    const linhas={},ms=new Set();
+    for(const e of blocos[0].getElementsByTagName("estado")){
+      const g=t=>{const n=e.getElementsByTagName(t)[0];return n?num(n.textContent.trim()):null;};
+      const r={federal:g("TributoFederal"),estadual:g("TributoEstadual"),mistura:g("PercentualMistura"),pmpf:g("PMPF"),aliquota:g("PercentualICMS")};
+      for(const uf of (e.getAttribute("ufAtendida")||"").split("|"))linhas[uf]=r;
+      const m=e.getElementsByTagName("MensagemPadrao")[0];if(m&&m.textContent.trim())ms.add(m.textContent.trim());
+    }
+    out[p.k]=linhas;msgs[p.k]=[...ms];
+  }
+  return {out,msgs};
+}
+const total=r=>r&&(r.federal!==null||r.estadual!==null)?(r.federal||0)+(r.estadual||0):null;
+
+function resumo(d){
+  const col=[["GASOLINA","gasC","var(--gas)"],["DIESEL","s10","var(--die)"],["ETANOL","eta","var(--eta)"],["GNV","gnv","var(--gnv)"]];
+  const med=(k,fn)=>media(UFS.map(uf=>{const r=(d[k]||{})[uf];return r?fn(r):null;}));
+  const linhas=[
+    ["<b>TRIBUTOS</b> <span class=\"det\">média Brasil (R$)</span>",k=>med(k,total),3,"total"],
+    ["<b>ICMS</b> <span class=\"det\">(imposto estadual, varia conforme o estado)</span>",k=>med(k,r=>r.estadual),4,""],
+    ["<b>PIS/COFINS + CIDE</b> <span class=\"det\">(impostos federais)</span>",k=>med(k,r=>r.federal),4,""]
+  ];
+  $("resumo").innerHTML=`<thead><tr><th></th>${col.map(c=>`<th scope="col">${c[0]}</th>`).join("")}</tr></thead>
+  <tbody><tr class="bombas"><td></td>${col.map(c=>`<td style="color:${c[2]}">${BOMBA}</td>`).join("")}</tr>
+  ${linhas.map(([rot,fn,dec,cls])=>`<tr class="${cls}"><th scope="row">${rot}</th>${col.map(c=>`<td>${f(fn(c[1]),dec)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+}
+
+function tabela(p,linhas,msgs){
+  const un=p.m3?"R$/m³":"R$/L";let cab,lin;
+  if(p.tipo==="gas"){
+    cab=`<th>Estado</th><th>CIDE + PIS/COFINS<small>${p.k==="gasP"?"Gasolina Premium":"Gasolina C"}</small></th><th>Etanol anidro<small>Mistura</small></th><th>ICMS<small>Total</small></th><th>Tributos<small>Total</small></th>`;
+    lin=r=>`<td>${f(r.federal,4)}</td><td>${pct(r.mistura)}</td><td>${f(r.estadual,4)}</td>`;
+  }else if(p.tipo==="die"){
+    cab=`<th>Estado</th><th>PIS/COFINS<small>Diesel B</small></th><th>Biodiesel<small>Mistura</small></th><th>ICMS<small>Total</small></th><th>Tributos<small>Total</small></th>`;
+    lin=r=>`<td>${f(r.federal,4)}</td><td>${pct(r.mistura)}</td><td>${f(r.estadual,4)}</td>`;
+  }else{
+    cab=`<th>Estado</th><th>PMPF<small>${un}</small></th><th>ICMS<small>Alíquota</small></th><th>ICMS<small>${un}</small></th><th>PIS/COFINS<small>${un}</small></th><th>Tributos<small>Total</small></th>`;
+    lin=r=>`<td>${f(r.pmpf,4)}</td><td>${pct(r.aliquota)}</td><td>${f(r.estadual,4)}</td><td>${f(r.federal,4)}</td>`;
+  }
+  const vazio=p.tipo==="uf"?"<td></td><td></td><td></td><td></td>":"<td></td><td></td><td></td>";
+  const corpo=UFS.map(uf=>{const r=linhas[uf];return `<tr><td>${uf}</td>${r?lin(r):vazio}<td class="tot">${f(total(r),3)}</td></tr>`;}).join("");
+  return `<section class="tabela" id="${p.k}" style="--cor:${p.cor};--cor-fg:${p.fg}">
+    <h3>${esc(p.nome)}</h3>
+    <div class="tw"><table class="tb"><thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody></table></div>
+    ${msgs.length?`<div class="msgs">${msgs.map(m=>`<p>${esc(m)}</p>`).join("")}</div>`:""}
+  </section>`;
+}
+
+(async()=>{
+  try{
+    const r=await fetch("arquivos.json",{cache:"no-store"});if(!r.ok)throw new Error("Lista de arquivos indisponível.");
+    const j=await r.json();
+    const xml=(j.xml||[]).map(x=>({...x,ref:dataDoXml(x.nome)})).filter(x=>x.ref).sort((a,b)=>b.ref.localeCompare(a.ref))[0];
+    if(!xml)throw new Error("Nenhum XML na pasta xml/.");
+    const t=await (await fetch(encodeURI(xml.caminho),{cache:"no-store"})).text();
+    const doc=new DOMParser().parseFromString(t,"application/xml");
+    if(doc.getElementsByTagName("parsererror").length)throw new Error("XML inválido: "+xml.nome);
+    const [a,m,d]=xml.ref.split("-");
+    $("ref").textContent=`${d} ${MESES[+m-1]} de ${a}`;
+    document.title=`Tributos dos Combustíveis por Estado – ${MESES[+m-1]}/${a} | Imex`;
+    const pdf=(j.pdf||[]).find(x=>dataDoPdf(x.nome)===xml.ref);
+    if(pdf){$("pdfLink").href=encodeURI(pdf.caminho);$("pdfLink").removeAttribute("target");$("pdfLink").setAttribute("download","");}
+    const {out,msgs}=extrair(doc,xml.ref);
+    resumo(out);
+    const lista=COMB.filter(p=>out[p.k]);
+    $("chips").innerHTML=lista.map(p=>`<a href="#${p.k}"><i style="background:${p.cor}"></i>${esc(p.nome.replace(" (comum ou aditivada)",""))}</a>`).join("");
+    $("tabelas").innerHTML=lista.map(p=>tabela(p,out[p.k],msgs[p.k]||[])).join("");
+  }catch(e){
+    $("ref").textContent="—";
+    $("erro").innerHTML=`<div class="msg bad"></div>`;$("erro").firstChild.textContent="Não foi possível carregar os dados: "+e.message;
+  }
+})();
+</script>
+<script src="tema.js"></script>
+</body>
+</html>
