@@ -16,6 +16,8 @@ concurrency:
 jobs:
   buscar:
     runs-on: ubuntu-latest
+    env:
+      TEM_EMAIL: ${{ secrets.MAIL_USERNAME != '' && secrets.MAIL_PASSWORD != '' && secrets.MAIL_TO != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -54,3 +56,36 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref main
+
+      - name: Montar e-mail de aviso
+        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
+        run: |
+          {
+            echo "Houve alteração na tributação da Fecombustíveis."
+            echo
+            git log -1 --pretty=%s
+            echo
+            echo "Site: https://imextecnologia.github.io/tributacao/tributos.html"
+            echo "Commit: ${{ github.server_url }}/${{ github.repository }}/commit/$(git rev-parse HEAD)"
+            echo
+            git diff HEAD~1 -- painel.json || true
+          } > email.txt
+
+      # secrets MAIL_USERNAME (conta Gmail), MAIL_PASSWORD (senha de app) e MAIL_TO (destinatários, separados por vírgula)
+      - name: Enviar e-mail de aviso
+        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Tributação Imex <${{ secrets.MAIL_USERNAME }}>
+          to: ${{ secrets.MAIL_TO }}
+          subject: "Tributos alterados: ${{ steps.busca.outputs.novo || 'quadro da Fecombustíveis' }}"
+          body: file://email.txt
+
+      - name: Aviso sem e-mail configurado
+        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL != 'true'
+        run: echo "::warning::Secrets MAIL_USERNAME/MAIL_PASSWORD/MAIL_TO não configurados; e-mail de aviso não enviado."
