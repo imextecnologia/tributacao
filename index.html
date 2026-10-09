@@ -3,12 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Imex | Transparência de Tributos – Combustíveis</title>
+<title>Transparência de Tributos de Combustíveis – Gerador de XML | Imex</title>
+<meta name="description" content="Gere o XML TransparenciaTributos com ICMS, PIS/COFINS e PMPF de gasolina, etanol, diesel e GNV nas 27 UFs a partir do PDF mensal de carga tributária estadual da Fecombustíveis.">
+<meta name="keywords" content="transparência de tributos, combustíveis, XML TransparenciaTributos, ICMS combustíveis, PMPF, PIS/COFINS, carga tributária estadual, Fecombustíveis, postos de combustíveis, Imex">
+<meta name="author" content="Imex Tecnologia">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://imextecnologia.github.io/tributacao/">
+<meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1016" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Imex">
+<meta property="og:title" content="Transparência de Tributos de Combustíveis – Gerador de XML | Imex">
+<meta property="og:description" content="Gere o XML TransparenciaTributos com ICMS, PIS/COFINS e PMPF de gasolina, etanol, diesel e GNV nas 27 UFs a partir do PDF mensal de carga tributária estadual da Fecombustíveis.">
+<meta property="og:url" content="https://imextecnologia.github.io/tributacao/">
+<meta property="og:image" content="https://imextecnologia.github.io/tributacao/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Imex – Transparência de Tributos de Combustíveis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Transparência de Tributos de Combustíveis – Gerador de XML | Imex">
+<meta name="twitter:description" content="Gere o XML TransparenciaTributos com ICMS, PIS/COFINS e PMPF de gasolina, etanol, diesel e GNV nas 27 UFs a partir do PDF mensal de carga tributária estadual da Fecombustíveis.">
+<meta name="twitter:image" content="https://imextecnologia.github.io/tributacao/og-image.png">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebApplication",
+      "@id":"https://imextecnologia.github.io/tributacao/#app",
+      "name":"Transparência de Tributos – Combustíveis",
+      "url":"https://imextecnologia.github.io/tributacao/",
+      "description":"Gere o XML TransparenciaTributos com ICMS, PIS/COFINS e PMPF de gasolina, etanol, diesel e GNV nas 27 UFs a partir do PDF mensal de carga tributária estadual da Fecombustíveis.",
+      "applicationCategory":"BusinessApplication",
+      "operatingSystem":"Web",
+      "inLanguage":"pt-BR",
+      "image":"https://imextecnologia.github.io/tributacao/og-image.png",
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},
+      "publisher":{"@id":"https://imex.com.br/#organization"}
+    },
+    {
+      "@type":"Organization",
+      "@id":"https://imex.com.br/#organization",
+      "name":"Imex",
+      "url":"https://imex.com.br/",
+      "logo":"https://imextecnologia.github.io/tributacao/imex-rodape.svg",
+      "email":"contato@imex.com.br",
+      "telephone":"+55 46 2101-0101",
+      "sameAs":["https://www.instagram.com/imextecnologia/","https://www.linkedin.com/company/imextecnologia/","https://www.youtube.com/@imextecnologia"]
+    }
+  ]
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="alternate icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://generativelanguage.googleapis.com" crossorigin>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{color-scheme:light;--bg:#f4f6f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#e1e5ec;--field:#f9fafb;--acc:#1f6feb;--acc-h:#1a5fcc;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff3b0;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06)}
 @media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none}}
@@ -86,6 +138,10 @@ td.err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
 #tabBody label{margin-top:14px}
 /* saída */
 pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:420px;overflow:auto;font-size:12px;margin:14px 0 0}
+.sobre{color:var(--muted);font-size:13.5px}
+.sobre h2{font-size:16px;color:var(--fg);margin:0 0 10px}
+.sobre ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.sobre strong{color:var(--fg);font-weight:600}
 .aviso{max-width:1180px;margin:auto;padding:0 16px 28px;font-size:12px;color:var(--muted);text-align:center}
 /* rodapé Imex */
 .rodape{background:#000;color:#fff}
@@ -119,7 +175,7 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
       <h1><span class="imex">Imex</span><span class="sep">|</span>Transparência de Tributos – Combustíveis
         <small>Atualização mensal do XML TransparenciaTributos a partir do PDF da Fecombustíveis</small></h1>
     </div>
-    <nav class="links">
+    <nav class="links" aria-label="Links externos">
       <a href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener">Fecombustíveis ↗</a>
       <a href="https://github.com/imextecnologia/tributacao" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
@@ -200,6 +256,16 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
   </div>
   <div id="genMsg"></div>
   <pre id="xmlOut" hidden></pre>
+</section>
+
+<section class="card sobre" aria-labelledby="sobre-t">
+  <h2 id="sobre-t">Sobre esta ferramenta</h2>
+  <ul>
+    <li>Lê o PDF mensal de <strong>carga tributária estadual dos combustíveis</strong> da Fecombustíveis e extrai, para cada UF, a alíquota de <strong>ICMS</strong>, o <strong>PMPF</strong> e os tributos federais (<strong>PIS/COFINS</strong>).</li>
+    <li>Cobre <strong>gasolina comum e premium, etanol hidratado, diesel S-500 e S-10 e GNV</strong> nas 27 unidades da federação.</li>
+    <li>Compara com o mês anterior, destaca o que mudou e gera o <strong>XML TransparenciaTributos</strong> com as novas vigências, além de uma planilha Excel.</li>
+    <li>Desenvolvida pela <a href="https://imex.com.br/" target="_blank" rel="noopener">Imex</a>, sistema de gestão para postos de combustíveis.</li>
+  </ul>
 </section>
 
 </main>
