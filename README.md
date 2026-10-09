@@ -26,7 +26,8 @@ Sem chave ou com limite estourado, use **Preencher a partir do XML atual** e dig
 
 ## Chave gratuita do Gemini
 
-- Crie em https://aistudio.google.com/apikey (conta Google, sem cartão).
+- Crie a chave grátis em [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (conta Google, sem cartão).
+- Chave colada no Passo 1: fica salva apenas neste navegador e é enviada somente ao Google.
 - O plano gratuito tem limite de requisições por minuto/dia — de sobra para uso mensal. Erro 429 = aguarde um minuto.
 - No plano gratuito o Google pode usar o conteúdo enviado para melhorar seus produtos; aqui só é enviado o PDF público da Fecombustíveis.
 
