@@ -54,6 +54,8 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 .resumo tbody th b{font-weight:700}
 .resumo td{font-size:15px;font-variant-numeric:tabular-nums}
 .resumo tr.total td{font-weight:700}
+.resumo .rs{font-size:.8em;font-weight:500;color:var(--muted)}
+.resumo .pct{display:block;font-size:12.5px;font-weight:600;color:var(--muted)}
 /* tabelas por estado */
 .tabelas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
 .tabela{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);scroll-margin-top:90px}
@@ -82,6 +84,8 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
   .resumo tbody th{font-size:12px;width:30%}
   .resumo .det{display:none}
   .resumo td{font-size:13px;padding:8px 2px}
+  .resumo .rs{display:block}
+  .resumo .pct{font-size:11.5px}
 }
 @media print{.top,.rodape,.chips,.aviso,.ref .btn-top{display:none}.card,.tabela{box-shadow:none;break-inside:avoid}body{background:#fff}}
 </style>
@@ -131,7 +135,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 <section class="card">
   <div class="card-h"><div>
     <h2>Resumo – média Brasil</h2>
-    <p>Média simples das UFs com valores, em R$ por litro (GNV em R$ por m³). Gasolina: gasolina C comum; diesel: S-10.</p>
+    <p>Média simples das UFs com valores, em R$ por litro (GNV em R$ por m³). Gasolina: gasolina C comum; diesel: S-10.<span id="precoRef"></span></p>
   </div></div>
   <div class="tw" style="border:0;max-height:none"><table class="resumo" id="resumo"></table></div>
 </section>
@@ -224,8 +228,17 @@ function extrair(doc,ref){
 }
 const total=r=>r&&(r.federal!==null||r.estadual!==null)?(r.federal||0)+(r.estadual||0):null;
 
+// preço médio de bomba da ANP (média Brasil, precos.json) para as % do resumo; no deploy vem embutido no HTML
+let PRECOS=window.PRECOS||null;
+const dataBR=s=>s.split("-").reverse().join("/");
 function resumo(d){
-  const col=[["GASOLINA","gasC","var(--gas)"],["DIESEL","s10","var(--die)"],["ETANOL","eta","var(--eta)"],["GNV","gnv","var(--gnv)"]];
+  const col=[["GASOLINA","gasC","var(--gas)","gasolina"],["DIESEL","s10","var(--die)","diesel"],["ETANOL","eta","var(--eta)","etanol"],["GNV","gnv","var(--gnv)","gnv"]];
+  const P=PRECOS&&PRECOS.precos;
+  // R$ e, embaixo, a % do preço de bomba; célula vazia mantém as mesmas linhas para o layout não pular
+  const pctLinha=t=>P?`<small class="pct">${t}</small>`:"";
+  const cel=(v,dec,c)=>v===null?`&nbsp;${pctLinha("&nbsp;")}`
+    :`<span class="rs">R$</span> ${f(v,dec)}${pctLinha(P&&P[c[3]]?f(v/P[c[3]]*100,1)+"%":"&nbsp;")}`;
+  $("precoRef").textContent=P?` Percentual sobre o preço médio de bomba da ANP na semana de ${dataBR(PRECOS.inicio)} a ${dataBR(PRECOS.fim)}.`:"";
   const med=(k,fn)=>media(UFS.map(uf=>{const r=(d[k]||{})[uf];return r?fn(r):null;}));
   const linhas=[
     ["<b>TRIBUTOS</b> <span class=\"det\">média Brasil (R$)</span>",k=>med(k,total),3,"total"],
@@ -234,7 +247,7 @@ function resumo(d){
   ];
   $("resumo").innerHTML=`<thead><tr><th></th>${col.map(c=>`<th scope="col">${c[0]}</th>`).join("")}</tr></thead>
   <tbody><tr class="bombas"><td></td>${col.map(c=>`<td style="color:${c[2]}">${BOMBA}</td>`).join("")}</tr>
-  ${linhas.map(([rot,fn,dec,cls])=>`<tr class="${cls}"><th scope="row">${rot}</th>${col.map(c=>`<td>${f(fn(c[1]),dec)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  ${linhas.map(([rot,fn,dec,cls])=>`<tr class="${cls}"><th scope="row">${rot}</th>${col.map(c=>`<td>${cel(fn(c[1]),dec,c)}</td>`).join("")}</tr>`).join("")}</tbody>`;
 }
 
 function tabela(p,linhas,msgs){
@@ -281,6 +294,7 @@ $("tabelas").innerHTML=COMB.map(p=>tabela(p,{},[])).join("");
     const pdf=(j.pdf||[]).find(x=>dataDoPdf(x.nome)===xml.ref);
     if(pdf){$("pdfLink").href=encodeURI(pdf.caminho);$("pdfLink").removeAttribute("target");$("pdfLink").setAttribute("download","");}
     const {out,msgs}=extrair(doc,xml.ref);
+    if(!PRECOS)try{const p=await fetch("precos.json",{cache:"no-store"});if(p.ok)PRECOS=await p.json();}catch(e){}
     resumo(out);
     const lista=COMB.filter(p=>out[p.k]);
     $("chips").innerHTML=chips(lista);
