@@ -13,7 +13,7 @@
 :root{color-scheme:light;--bg:#f4f6f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#e1e5ec;--field:#f9fafb;--acc:#1f6feb;--acc-h:#1a5fcc;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff3b0;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06)}
 @media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 a{color:var(--acc)}
 code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;background:var(--acc2);padding:1px 5px;border-radius:4px}
 /* topo */
@@ -28,7 +28,7 @@ h1{font-size:19px;margin:0;line-height:1.25}
 .top .links{margin-left:auto;display:flex;gap:14px;font-size:13px}
 .top .links a{text-decoration:none}.top .links a:hover{text-decoration:underline}
 /* passos */
-main{max-width:1180px;margin:auto;padding:20px 16px 40px}
+main{max-width:1180px;width:100%;margin:0 auto;padding:20px 16px 24px;flex:1}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 16px;box-shadow:var(--shadow)}
 .card-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
 .card-h h2{font-size:16px;margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -86,13 +86,29 @@ td.err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
 #tabBody label{margin-top:14px}
 /* saída */
 pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:420px;overflow:auto;font-size:12px;margin:14px 0 0}
-footer{max-width:1180px;margin:auto;padding:0 16px 32px;font-size:12px;color:var(--muted);text-align:center}
+.aviso{max-width:1180px;margin:auto;padding:0 16px 28px;font-size:12px;color:var(--muted);text-align:center}
+/* rodapé Imex */
+.rodape{background:#000;color:#fff}
+.rodape-in{max-width:1180px;margin:auto;padding:44px 16px;display:grid;grid-template-columns:1.2fr 1.3fr 1fr 1fr;gap:32px 40px;align-items:start}
+.rodape a{color:#fff;text-decoration:none}
+.rodape a:hover{color:#4d8bff}
+.rodape .logo img{display:block;width:200px;max-width:100%;height:auto}
+.rodape .slogan{margin:24px 0 0;font-size:18px;line-height:1.35}
+.rodape .contato p{margin:0 0 14px;font-size:17px}
+.rodape .contato span{color:#1f63ff}
+.rodape .redes{display:flex;gap:14px;margin-top:28px}
+.rodape .redes a{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#1f63ff;color:#fff;transition:background .15s}
+.rodape .redes a:hover{background:#4d8bff;color:#fff}
+.rodape .redes svg{width:22px;height:22px;fill:currentColor}
+.rodape nav{display:flex;flex-direction:column;gap:22px;font-size:17px}
 @media (max-width:760px){
   .grid{grid-template-columns:1fr}
   .top .links{margin-left:0}
   .actions button{flex:1 1 100%}
   .card{padding:16px}
 }
+@media (max-width:900px){.rodape-in{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.rodape-in{grid-template-columns:1fr}.rodape nav{gap:14px}}
 </style>
 </head>
 <body>
@@ -187,7 +203,34 @@ footer{max-width:1180px;margin:auto;padding:0 16px 32px;font-size:12px;color:var
 </section>
 
 </main>
-<footer>Os valores são lidos por IA (Google Gemini) e podem conter erros — sempre confira com o PDF oficial.</footer>
+<p class="aviso">Os valores são lidos por IA (Google Gemini) e podem conter erros — sempre confira com o PDF oficial.</p>
+<footer class="rodape">
+  <div class="rodape-in">
+    <div>
+      <a class="logo" href="https://imex.com.br/" target="_blank" rel="noopener"><img src="imex-rodape.svg" alt="IMEX — Powered by metanet | xpert" width="245" height="88"></a>
+      <p class="slogan">O maior sistema para<br>postos de combustíveis</p>
+    </div>
+    <div class="contato">
+      <p><span>E-mail:</span> <a href="mailto:contato@imex.com.br">contato@imex.com.br</a></p>
+      <p><span>Telefone:</span> <a href="tel:+554621010101">(46) 2101-0101</a></p>
+      <div class="redes">
+        <a href="https://www.instagram.com/imextecnologia/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zM12 0C8.7 0 8.3 0 7.1.1 2.7.3.3 2.7.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.2 4.4 2.6 6.8 7 7 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c4.4-.2 6.8-2.6 7-7 .1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.2-4.4-2.6-6.8-7-7C15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg></a>
+        <a href="https://www.linkedin.com/company/imextecnologia/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4V21H3V9.75zM9.5 9.75h3.8v1.54h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.05c0-1.2-.02-2.75-1.68-2.75-1.68 0-1.94 1.31-1.94 2.66V21h-4V9.75z"/></svg></a>
+        <a href="https://www.youtube.com/@imextecnologia" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg></a>
+      </div>
+    </div>
+    <nav aria-label="Imex">
+      <a href="https://imex.com.br/xpert/" target="_blank" rel="noopener">xpert</a>
+      <a href="https://imex.com.br/metanet/" target="_blank" rel="noopener">Metanet</a>
+      <a href="https://imex.com.br/quem-somos/" target="_blank" rel="noopener">Quem somos</a>
+    </nav>
+    <nav aria-label="Institucional">
+      <a href="https://imex.com.br/blog/" target="_blank" rel="noopener">Blog</a>
+      <a href="https://imex.com.br/contato/" target="_blank" rel="noopener">Contato</a>
+      <a href="https://imex.com.br/politica-de-privacidade/" target="_blank" rel="noopener">Política de privacidade</a>
+    </nav>
+  </div>
+</footer>
 <script>
 "use strict";
 const UFS="AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO".split(" ");
