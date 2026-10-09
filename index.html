@@ -75,6 +75,8 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
       <h1><span class="imex">Imex</span><span class="sep">|</span>Transparência de Tributos – Combustíveis
         <small>Atualização mensal do XML TransparenciaTributos a partir do PDF da Fecombustíveis</small></h1>
     </div>
+    <button type="button" class="hamb" aria-label="Abrir menu" aria-expanded="false" aria-controls="navTopo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="l1" d="M4 7h16"/><path class="l2" d="M4 12h16"/><path class="l3" d="M4 17h16"/></svg></button>
+    <div class="navwrap" id="navTopo">
     <nav class="menu" aria-label="Páginas">
       <a href="./" aria-current="page">Gerador XML</a>
       <a href="tributos.html">Tributos por estado</a>
@@ -82,11 +84,13 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
     <div class="acoes">
       <a class="btn-top" href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener" title="Página de tributação da Fecombustíveis" aria-label="Fecombustíveis (abre em nova aba)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span class="txt">Fecombustíveis</span></a>
       <a class="btn-top ico" href="https://github.com/imextecnologia/tributacao" target="_blank" rel="noopener" title="Código no GitHub" aria-label="GitHub (abre em nova aba)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.1 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.1.9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+      <span class="rot-tema">Tema</span>
       <div class="tema" role="group" aria-label="Tema">
         <button type="button" data-tema="light" title="Claro" aria-label="Tema claro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button>
         <button type="button" data-tema="dark" title="Escuro" aria-label="Tema escuro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
         <button type="button" data-tema="system" title="Sistema" aria-label="Tema do sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></button>
       </div>
+    </div>
     </div>
   </div>
 </header>

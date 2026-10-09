@@ -15,6 +15,15 @@ h1,.h1{font-size:19px;margin:0;line-height:1.25;font-weight:700}
 .brand .imex{font-weight:800}
 .brand .sep{color:var(--muted);font-weight:300;margin:0 8px}
 .brand small{display:block;font-size:12.5px;font-weight:400;color:var(--muted);margin-top:2px}
+.navwrap{display:flex;align-items:center;gap:16px;flex:none}
+.hamb{display:none;place-items:center;width:40px;height:40px;padding:0;margin-left:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);flex:none}
+.hamb:hover:not(:disabled){background:var(--field);border-color:var(--line)}
+.hamb svg{width:22px;height:22px}
+.hamb path{transition:transform .2s,opacity .2s;transform-origin:12px 12px}
+.hamb[aria-expanded=true] .l1{transform:translateY(5px) rotate(45deg)}
+.hamb[aria-expanded=true] .l2{opacity:0}
+.hamb[aria-expanded=true] .l3{transform:translateY(-5px) rotate(-45deg)}
+.rot-tema{display:none}
 .menu{display:flex;gap:4px;flex:none}
 .menu a{padding:7px 12px;border-radius:8px;color:var(--muted);font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
 .menu a:hover{color:var(--fg);background:var(--field)}
@@ -114,11 +123,17 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
   .brand .marca{width:28px;height:32px}
   .brand h1,.brand .h1{font-size:15px}
   .brand .imex,.brand .sep,.brand small{display:none}
-  .top-in{flex-wrap:wrap}
-  .menu{order:3;width:100%;border-top:1px solid var(--line);padding-top:8px;margin:0 -12px;padding-left:12px;padding-right:12px;width:calc(100% + 24px)}
-  .menu a{flex:1;text-align:center}
-  .btn-top .txt{display:none}
-  .btn-top{width:36px;padding:0;justify-content:center}
+  .hamb{display:grid}
+  .navwrap{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;gap:0;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 12px 24px rgba(0,0,0,.18);padding:8px 12px 14px;max-height:calc(100vh - 60px);overflow:auto}
+  .top.aberto .navwrap{display:flex}
+  .menu{flex-direction:column;gap:2px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .menu a{padding:12px 12px;font-size:15px;border-radius:8px}
+  .acoes{flex-wrap:wrap;gap:10px;padding-top:12px}
+  .acoes .btn-top{height:42px;flex:1;justify-content:center}
+  .acoes .btn-top.ico{flex:none;width:42px}
+  .rot-tema{display:block;width:100%;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:4px}
+  .tema{width:100%;height:42px}
+  .tema button{flex:1;height:34px;width:auto}
   main{padding:14px 12px 20px}
   .card-h{margin-bottom:12px}
   .tabs{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px 12px;padding:0 16px 4px;scrollbar-width:thin}
@@ -134,4 +149,4 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
 }
 @media (max-width:900px){.rodape-in{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.rodape-in{grid-template-columns:1fr;padding:36px 16px;gap:28px}.rodape nav{gap:14px}.rodape .slogan{font-size:16px}}
-@media (max-width:420px){.tema button{width:26px}.acoes{gap:6px}}
+
