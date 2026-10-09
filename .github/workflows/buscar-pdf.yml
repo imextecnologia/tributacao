@@ -2,7 +2,7 @@ name: Buscar PDF e quadro de tributação da Fecombustíveis
 
 on:
   schedule:
-    - cron: "0 */12 * * *" # a cada 12 horas (00:00 e 12:00 UTC)
+    - cron: "0 */8 * * *" # a cada 8 horas (00:00, 08:00 e 16:00 UTC)
   workflow_dispatch:
 
 permissions:

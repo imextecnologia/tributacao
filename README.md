@@ -7,7 +7,7 @@ Site estático (GitHub Pages) que gera todo mês o XML `TransparenciaTributos` a
 
 ## Como funciona
 
-1. **Busca do PDF** – a cada 12 horas um workflow procura o PDF novo na página da Fecombustíveis e salva em `pdf/`.
+1. **Busca do PDF** – a cada 8 horas um workflow procura o PDF novo na página da Fecombustíveis e salva em `pdf/`.
 2. **Leitura com IA** – o site envia o PDF ao Google Gemini, que devolve os valores por combustível e UF.
 3. **Comparação** – os valores são comparados com o XML do mês anterior (em `xml/`) e o que mudou fica destacado.
 4. **Geração** – para cada combustível que mudou, o bloco antigo termina no dia anterior (ex.: 30/09/2026) e é criado
@@ -65,7 +65,7 @@ Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.
 | `scripts/embutir-recursos.js` | No deploy, embute `site.css`, `tema.js` e o logo do rodapé nas páginas |
 | `scripts/gerar-arquivos.js` | Gera `arquivos.json`, a lista de arquivos de `pdf/` e `xml/` que o site lê |
 | `.github/workflows/pages.yml` | Publica o site a cada push na `main` |
-| `.github/workflows/buscar-pdf.yml` | Roda a busca do PDF e do quadro de tributação a cada 12 horas |
+| `.github/workflows/buscar-pdf.yml` | Roda a busca do PDF e do quadro de tributação a cada 8 horas |
 
 ## Configuração (uma vez)
 
