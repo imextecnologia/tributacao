@@ -14,7 +14,9 @@ Tudo roda no navegador; nenhum servidor próprio é necessário.
 ## Uso mensal
 
 1. O PDF do mês é baixado sozinho para `pdf/` (ver *Busca automática do PDF*). Coloque o XML atual na pasta `xml/`, faça commit e push. O deploy atualiza o site.
-2. Abra o site. **Passo 1** – o PDF e o XML mais recentes das pastas (pela data do último commit) já vêm selecionados.
+2. Abra o site. **Passo 1** – o PDF mais recente de `pdf/` já vem selecionado, e como base o XML de `xml/` anterior ao mês do PDF.
+   Se o XML do mês do PDF já estiver em `xml/` (ex.: `TransparenciaTributos_20261001.xml` para o PDF de 01 OUTUBRO 2026),
+   ele é carregado direto, sem chamar a IA. O resultado da IA também fica salvo no navegador: atualizar a página não chama a IA de novo.
    Para usar outros arquivos, abra *Enviar arquivos manualmente* (selecione ou cole o XML). Confira as datas de vigência
    (a data de início é preenchida automaticamente com a "Referência" do PDF).
 3. Clique em **Extrair valores do PDF com IA**.
