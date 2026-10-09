@@ -14,20 +14,19 @@ Tudo roda no navegador; nenhum servidor próprio é necessário.
 ## Uso mensal
 
 1. Abra o site.
-2. **Passo 1** – cole a chave da API Gemini (só na primeira vez; fica salva no navegador) e clique em *Carregar modelos*. Prefira um modelo `flash`.
-3. **Passo 2** – selecione o PDF do mês e o XML atual (ou cole o XML). Confira as datas de vigência
+2. **Passo 1** – selecione o PDF do mês e o XML atual (ou cole o XML). Confira as datas de vigência
    (a data de início é preenchida automaticamente com a "Referência" do PDF).
 4. Clique em **Extrair valores do PDF com IA**.
-5. **Passo 3** – revise as abas. Amarelo = mudou em relação ao XML atual; borda vermelha = conta não fecha
+3. **Passo 2** – revise as abas. Amarelo = mudou em relação ao XML atual; borda vermelha = conta não fecha
    (PMPF × alíquota ≠ ICMS, ou PMPF × 9,25% ≠ PIS/COFINS no GNV). Ajuste a *MensagemPadrao* se o decreto mudou.
-6. **Passo 4** – *Gerar XML*, depois *Baixar XML* / *Baixar Excel*.
+4. **Passo 3** – *Gerar XML*, depois *Baixar XML* / *Baixar Excel*.
 
 Sem chave ou com limite estourado, use **Preencher a partir do XML atual** e digite os valores manualmente.
 
 ## Chave gratuita do Gemini
 
 - Crie a chave grátis em [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (conta Google, sem cartão).
-- Chave colada no Passo 1: fica salva apenas neste navegador e é enviada somente ao Google.
+- A chave é enviada somente ao Google. O site usa os modelos `gemini-flash-latest`, `gemini-flash-lite-latest`, `gemini-2.5-flash` e `gemini-2.5-flash-lite`, nessa ordem.
 - O plano gratuito tem limite de requisições por minuto/dia — de sobra para uso mensal. Erro 429 = aguarde um minuto.
 - No plano gratuito o Google pode usar o conteúdo enviado para melhorar seus produtos; aqui só é enviado o PDF público da Fecombustíveis.
 
@@ -49,7 +48,7 @@ No GitHub:
 2. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 A cada push na `main` o workflow `.github/workflows/pages.yml` grava a chave no `index.html` e publica o site,
-então ninguém precisa colar a chave no Passo 1 (quem quiser ainda pode colar outra).
+e o site usa essa chave automaticamente. Para trocar a chave, atualize o secret e rode o workflow de novo.
 **Atenção:** a chave fica visível no código-fonte do site publicado. Restrinja-a em
 https://console.cloud.google.com/apis/credentials (*Restrições de aplicativo → Referenciadores HTTP* =
 `https://<seu-usuario>.github.io/*` e *Restrições de API* = Generative Language API).

@@ -66,22 +66,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 <main>
 
 <section class="card">
-  <h2><span class="step">1</span>Configuração da IA</h2>
-  <div class="row">
-    <label style="flex:1;min-width:260px">Chave da API Gemini (gratuita)
-      <input id="apiKey" type="password" placeholder="Cole sua chave do Google AI Studio" autocomplete="off">
-    </label>
-    <label style="min-width:240px">Modelo
-      <input id="model" list="models" placeholder="ex.: gemini-flash-latest">
-      <datalist id="models"></datalist>
-    </label>
-    <button class="sec" id="btnModels">Carregar modelos</button>
-  </div>
-  <div id="cfgMsg"></div>
-</section>
-
-<section class="card">
-  <h2><span class="step">2</span>Arquivos e vigência</h2>
+  <h2><span class="step">1</span>Arquivos e vigência</h2>
   <div class="grid2">
     <label>PDF da Fecombustíveis (Carga tributária estadual)
       <input id="pdf" type="file" accept="application/pdf">
@@ -106,14 +91,14 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 </section>
 
 <section class="card" id="revCard" hidden>
-  <h2><span class="step">3</span>Revisar valores <span class="pill" id="revInfo"></span></h2>
+  <h2><span class="step">2</span>Revisar valores <span class="pill" id="revInfo"></span></h2>
   <p class="hint">Células em amarelo mudaram em relação ao XML atual (valor antigo abaixo). Bordas vermelhas indicam conta que não fecha (ex.: PMPF × alíquota ≠ ICMS). Confira com o PDF antes de gerar.</p>
   <div class="tabs" id="tabs"></div>
   <div id="tabBody"></div>
 </section>
 
 <section class="card" id="outCard" hidden>
-  <h2><span class="step">4</span>Gerar arquivos</h2>
+  <h2><span class="step">3</span>Gerar arquivos</h2>
   <div class="row">
     <button id="btnGen">Gerar XML</button>
     <button class="sec" id="btnDlXml" disabled>Baixar XML</button>
@@ -139,16 +124,9 @@ const PRODUTOS=[
 const $=id=>document.getElementById(id);
 const S={xml:null,atual:{},novo:null,msgs:{},tab:"gasolinaC",out:null};
 
-/* ---------- storage ---------- */
+/* ---------- chave da IA ---------- */
 /* Chave injetada pelo GitHub Actions a partir do secret GEMINI_API_KEY (ver .github/workflows/pages.yml) */
 const CHAVE_SITE=(k=>k.startsWith("__")?"":k)("__GEMINI_API_KEY__");
-const chave=()=>$("apiKey").value.trim()||CHAVE_SITE;
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-$("apiKey").value=store.get("gemKey")||"";
-if(CHAVE_SITE)$("apiKey").placeholder="Usando a chave configurada no site (opcional: cole outra)";
-$("model").value=store.get("gemModel")||"gemini-flash-latest";
-$("apiKey").onchange=()=>store.set("gemKey",$("apiKey").value.trim());
-$("model").onchange=()=>store.set("gemModel",$("model").value.trim());
 
 function msg(el,txt,cls){$(el).innerHTML=txt?`<div class="msg ${cls||"ok"}"></div>`:"";if(txt)$(el).firstChild.textContent=txt;}
 
@@ -227,21 +205,6 @@ Regras:
 - GNV: para cada UF, aliquota = "ICMS Alíquota" em %, pmpf = coluna PMPF (null se em branco), estadual = "ICMS TOTAL" (R$/m³), federal = "PIS/COFINS GNV" (R$/m³). Se a linha estiver em branco, use null. Remova asteriscos da UF.
 - Não arredonde: copie o número com as casas decimais mostradas. Liste as 27 UFs em ordem alfabética.`;
 
-async function listarModelos(){
-  const key=chave();if(!key)return msg("cfgMsg","Informe a chave primeiro.","warn");
-  if($("apiKey").value.trim())store.set("gemKey",key);
-  try{
-    const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":key}});
-    const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
-    const ms=(j.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")&&/gemini/i.test(m.name)).map(m=>m.name.replace("models/",""));
-    ms.sort((a,b)=>(/flash/.test(b)-/flash/.test(a))||(/lite|tts|image|live|embed/.test(a)-/lite|tts|image|live|embed/.test(b))||b.localeCompare(a,undefined,{numeric:true}));
-    $("models").innerHTML=ms.map(m=>`<option value="${escA(m)}">`).join("");
-    if(!ms.includes($("model").value)&&ms.length){$("model").value=ms[0];store.set("gemModel",ms[0]);}
-    msg("cfgMsg",`Chave válida. ${ms.length} modelos disponíveis (sugestão: um modelo "flash").`,"ok");
-  }catch(e){msg("cfgMsg","Não foi possível listar modelos: "+e.message,"bad");}
-}
-$("btnModels").onclick=listarModelos;
-
 const b64=file=>new Promise((ok,err)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(",")[1]);r.onerror=err;r.readAsDataURL(file);});
 
 const dormir=ms=>new Promise(r=>setTimeout(r,ms));
@@ -256,14 +219,11 @@ async function chamarModelo(key,model,body){
   return JSON.parse(txt.replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"").trim());
 }
 async function chamarGemini(pdfB64){
-  const key=chave(),model=$("model").value.trim()||"gemini-flash-latest";
-  if(!key)throw new Error("Informe a chave da API Gemini no passo 1.");
-  if($("apiKey").value.trim())store.set("gemKey",key);store.set("gemModel",model);
+  const key=CHAVE_SITE,model=FALLBACKS[0];
+  if(!key)throw new Error("Chave da API Gemini não configurada no site (secret GEMINI_API_KEY). Use o preenchimento manual.");
   const body={contents:[{role:"user",parts:[{inline_data:{mime_type:"application/pdf",data:pdfB64}},{text:PROMPT}]}],
     generationConfig:{temperature:0,responseMimeType:"application/json"}};
-  // modelo escolhido primeiro; depois outros "flash" disponíveis na conta
-  const lista=[...$("models").options].map(o=>o.value).filter(m=>/flash/.test(m)&&!/tts|image|live|audio/.test(m));
-  const modelos=[...new Set([model,...lista,...FALLBACKS])].slice(0,4);
+  const modelos=FALLBACKS;
   let ultimo;
   for(const m of modelos){
     for(let t=1;t<=3;t++){
@@ -283,7 +243,7 @@ async function chamarGemini(pdfB64){
       }
     }
   }
-  throw new Error("Não foi possível usar a IA agora (Google sobrecarregado ou limite atingido). Tente novamente em alguns minutos, escolha outro modelo no passo 1, ou use o preenchimento manual.\nÚltimo erro: "+(ultimo?.message||""));
+  throw new Error("Não foi possível usar a IA agora (Google sobrecarregado ou limite atingido). Tente novamente em alguns minutos ou use o preenchimento manual.\nÚltimo erro: "+(ultimo?.message||""));
 }
 
 function normalizar(d){
