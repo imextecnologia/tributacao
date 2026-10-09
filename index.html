@@ -373,8 +373,9 @@ function dataDoXml(nome){const m=nome.match(/(\d{4})(\d{2})(\d{2})/);return m?`$
 const cache={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 async function carregarArquivos(){
-  let j={pdf:[],xml:[]};
-  try{const r=await fetch("arquivos.json",{cache:"no-store"});if(r.ok)j=await r.json();}catch(e){}
+  // no deploy a lista vem embutida no HTML (window.ARQUIVOS); localmente, do arquivos.json
+  let j=window.ARQUIVOS||{pdf:[],xml:[]};
+  if(!window.ARQUIVOS)try{const r=await fetch("arquivos.json",{cache:"no-store"});if(r.ok)j=await r.json();}catch(e){}
   // mais recente primeiro pela data no nome do arquivo (se não houver, data do commit)
   AUTO.pdf=(j.pdf||[]).map(f=>({...f,ref:dataDoPdf(f.nome)||f.data})).sort((a,b)=>b.ref.localeCompare(a.ref));
   AUTO.xml=(j.xml||[]).map(f=>({...f,ref:dataDoXml(f.nome)||f.data})).sort((a,b)=>b.ref.localeCompare(a.ref));

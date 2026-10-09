@@ -36,7 +36,7 @@ jobs:
           fi
 
       - name: Listar arquivos de pdf/ e xml/
-        run: node scripts/gerar-arquivos.js
+        run: node scripts/gerar-arquivos.js --html
 
       # versão nos links de CSS/JS para o navegador não usar a cópia antiga do cache
       - name: Versionar CSS e JS

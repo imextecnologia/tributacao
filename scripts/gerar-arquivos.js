@@ -17,3 +17,17 @@ function listar(dir,ext){
 const out={pdf:listar("pdf",".pdf"),xml:listar("xml",".xml")};
 fs.writeFileSync(path.join(raiz,"arquivos.json"),JSON.stringify(out,null,2));
 console.log(`arquivos.json: ${out.pdf.length} PDF(s), ${out.xml.length} XML(s)`);
+
+// --html (deploy): embute a lista nas páginas e pré-carrega o XML mais recente em tributos.html,
+// para o navegador não esperar o arquivos.json antes de pedir o XML (cadeia de requisições críticas)
+if(process.argv.includes("--html")){
+  const lista=`<script>window.ARQUIVOS=${JSON.stringify(out).replace(/</g,"\\u003c")};</script>\n`;
+  const ultimo=out.xml.filter(f=>/\d{8}/.test(f.nome)).sort((a,b)=>b.nome.match(/\d{8}/)[0].localeCompare(a.nome.match(/\d{8}/)[0]))[0];
+  const marca='<link rel="stylesheet" href="site.css"';
+  for(const [arq,extra] of [["index.html",""],["tributos.html",ultimo?`<link rel="preload" href="${encodeURI(ultimo.caminho)}" as="fetch" crossorigin>\n`:""]]){
+    const p=path.join(raiz,arq),s=fs.readFileSync(p,"utf8");
+    if(!s.includes(marca))throw new Error(`${arq}: link do site.css não encontrado`);
+    fs.writeFileSync(p,s.replace(marca,extra+lista+marca));
+  }
+  console.log(`lista embutida no HTML${ultimo?`; preload de ${ultimo.caminho}`:""}`);
+}
