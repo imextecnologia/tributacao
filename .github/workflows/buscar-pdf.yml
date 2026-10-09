@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TEM_EMAIL: ${{ secrets.MAIL_USERNAME != '' && secrets.MAIL_PASSWORD != '' && secrets.MAIL_TO != '' }}
+      TEM_DISCORD: ${{ secrets.DISCORD_BOT_TOKEN != '' && secrets.DISCORD_CHANNEL_ID != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -74,6 +75,7 @@ jobs:
       # secrets MAIL_USERNAME (conta Gmail), MAIL_PASSWORD (senha de app) e MAIL_TO (destinatários, separados por vírgula)
       - name: Enviar e-mail de aviso
         if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL == 'true'
+        continue-on-error: true # se o e-mail falhar, ainda avisa no Discord
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -85,6 +87,26 @@ jobs:
           to: ${{ secrets.MAIL_TO }}
           subject: "Tributos alterados: ${{ steps.busca.outputs.novo || 'quadro da Fecombustíveis' }}"
           body: file://email.txt
+
+      # secrets DISCORD_BOT_TOKEN (token do bot) e DISCORD_CHANNEL_ID (canal onde o bot posta)
+      - name: Avisar no Discord
+        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_DISCORD == 'true'
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+        run: |
+          # o Discord aceita até 2000 caracteres por mensagem
+          texto=$(head -c 1900 email.txt)
+          jq -n --arg t "$texto" '{content: ("**Tributos alterados**\n```diff\n" + $t + "\n```"), allowed_mentions: {parse: []}}' > discord.json
+          curl -sS --fail-with-body -X POST \
+            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data @discord.json \
+            "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages" > /dev/null
+
+      - name: Aviso sem Discord configurado
+        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_DISCORD != 'true'
+        run: echo "::warning::Secrets DISCORD_BOT_TOKEN/DISCORD_CHANNEL_ID não configurados; aviso no Discord não enviado."
 
       - name: Aviso sem e-mail configurado
         if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL != 'true'
