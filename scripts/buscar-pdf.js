@@ -19,7 +19,7 @@ function interpretar(url){
 }
 // mesmo nome do arquivo no link (ex.: "Carga tributria estadual - 01 OUTUBRO 2026.pdf")
 const nomeArquivo=c=>decodeURIComponent(c.url.split("/").pop());
-const ordem=c=>c.ano*100+c.mes;
+const ordem=c=>c.ano*10000+c.mes*100+ +c.dia; // "10 OUTUBRO" vem antes de "01 OUTUBRO"
 
 async function daPagina(){
   const r=await fetch(PAGINA,{headers:UA});

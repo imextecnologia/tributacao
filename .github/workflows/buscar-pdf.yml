@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 */8 * * *" # a cada 8 horas (00:00, 08:00 e 16:00 UTC)
   workflow_dispatch:
+    inputs:
+      testar_xml:
+        description: "Só testar a geração do XML do PDF mais recente (não grava nada)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -26,40 +31,69 @@ jobs:
         with:
           node-version: 20
 
+      - name: Testar geração do XML
+        if: inputs.testar_xml
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || vars.GEMINI_API_KEY }}
+        run: |
+          node scripts/gerar-xml.js --testar || true
+          echo "--- diferença para o XML que já está em xml/ (vazio = igual) ---"
+          f=$(ls xml/TransparenciaTributos_*.xml | sort | tail -1)
+          diff <(tr -d '\r' < "$f") xml-teste.xml || true
+
       - name: Procurar PDF novo
         id: busca
+        if: ${{ !inputs.testar_xml }}
         run: node scripts/buscar-pdf.js
 
       # quadro oficial de tributação (% por combustível) da página da Fecombustíveis, mostrado no resumo;
       # se a leitura falhar, segue sem atualizar o quadro
       - name: Atualizar quadro oficial de tributação
         id: painel
+        if: ${{ !inputs.testar_xml }}
         continue-on-error: true
         run: node scripts/buscar-painel.js
 
-      - name: Commit do PDF e do quadro
-        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
+      # XML do PDF novo (ou de um PDF anterior cuja geração falhou): o atual vira antigo e entra o novo.
+      # Se a IA falhar ou algum valor não fechar a conta, não grava; o aviso pede para gerar e revisar no site.
+      - name: Gerar XML do PDF novo
+        id: xml
+        if: ${{ !inputs.testar_xml }}
+        continue-on-error: true
         env:
           ARQUIVO: ${{ steps.busca.outputs.novo }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || vars.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$ARQUIVO" ]; then node scripts/gerar-xml.js "pdf/$ARQUIVO"
+          else node scripts/gerar-xml.js --pendente; fi
+
+      - name: Commit do PDF, do XML e do quadro
+        id: commit
+        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '' || steps.xml.outputs.xml != ''
+        env:
+          ARQUIVO: ${{ steps.busca.outputs.novo }}
+          XML: ${{ steps.xml.outputs.xml }}
           PAINEL: ${{ steps.painel.outputs.novo }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           msg=""
           if [ -n "$ARQUIVO" ]; then git add "pdf/$ARQUIVO"; msg="PDF da Fecombustíveis: $ARQUIVO"; fi
+          if [ -n "$XML" ]; then git add "xml/$XML"; msg="${msg:+$msg; }XML gerado: $XML"; fi
           if [ -n "$PAINEL" ]; then git add painel.json; msg="${msg:+$msg; }Quadro de tributação da Fecombustíveis atualizado"; fi
           git commit -m "$msg"
           git push
+          echo "feito=1" >> "$GITHUB_OUTPUT"
 
       # push feito com GITHUB_TOKEN não dispara outros workflows; publica o site explicitamente
       - name: Publicar site
-        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
+        if: steps.commit.outputs.feito == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref main
 
       - name: Montar e-mail de aviso
-        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
+        if: steps.commit.outputs.feito == '1'
         run: |
           {
             echo "Houve alteração na tributação da Fecombustíveis."
@@ -68,13 +102,14 @@ jobs:
             echo
             echo "Site: https://imextecnologia.github.io/tributacao/tributos.html"
             echo "Commit: ${{ github.server_url }}/${{ github.repository }}/commit/$(git rev-parse HEAD)"
+            if [ -f xml-resumo.txt ]; then echo; cat xml-resumo.txt; fi
             echo
             git diff HEAD~1 -- painel.json || true
           } > email.txt
 
       # secrets MAIL_USERNAME (conta Gmail), MAIL_PASSWORD (senha de app) e MAIL_TO (destinatários, separados por vírgula)
       - name: Enviar e-mail de aviso
-        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL == 'true'
+        if: steps.commit.outputs.feito == '1' && env.TEM_EMAIL == 'true'
         continue-on-error: true # se o e-mail falhar, ainda avisa no Discord
         uses: dawidd6/action-send-mail@v3
         with:
@@ -85,12 +120,12 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           from: Tributação Imex <${{ secrets.MAIL_USERNAME }}>
           to: ${{ secrets.MAIL_TO }}
-          subject: "Tributos alterados: ${{ steps.busca.outputs.novo || 'quadro da Fecombustíveis' }}"
+          subject: "Tributos alterados: ${{ steps.busca.outputs.novo || steps.xml.outputs.xml || 'quadro da Fecombustíveis' }}"
           body: file://email.txt
 
       # secrets DISCORD_BOT_TOKEN (token do bot) e DISCORD_CHANNEL_ID (canal onde o bot posta)
       - name: Avisar no Discord
-        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_DISCORD == 'true'
+        if: steps.commit.outputs.feito == '1' && env.TEM_DISCORD == 'true'
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
@@ -105,9 +140,9 @@ jobs:
             "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages" > /dev/null
 
       - name: Aviso sem Discord configurado
-        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_DISCORD != 'true'
+        if: steps.commit.outputs.feito == '1' && env.TEM_DISCORD != 'true'
         run: echo "::warning::Secrets DISCORD_BOT_TOKEN/DISCORD_CHANNEL_ID não configurados; aviso no Discord não enviado."
 
       - name: Aviso sem e-mail configurado
-        if: (steps.busca.outputs.novo != '' || steps.painel.outputs.novo != '') && env.TEM_EMAIL != 'true'
+        if: steps.commit.outputs.feito == '1' && env.TEM_EMAIL != 'true'
         run: echo "::warning::Secrets MAIL_USERNAME/MAIL_PASSWORD/MAIL_TO não configurados; e-mail de aviso não enviado."

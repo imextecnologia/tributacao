@@ -7,7 +7,8 @@ Site estático (GitHub Pages) que gera todo mês o XML `TransparenciaTributos` a
 
 ## Como funciona
 
-1. **Busca do PDF** – a cada 8 horas um workflow procura o PDF novo na página da Fecombustíveis e salva em `pdf/`.
+1. **Busca do PDF** – a cada 8 horas um workflow procura o PDF novo na página da Fecombustíveis, salva em `pdf/`
+   e já gera o XML do mês em `xml/` (veja [Busca automática do PDF](#busca-automática-do-pdf)).
 2. **Leitura com IA** – o site envia o PDF ao Google Gemini, que devolve os valores por combustível e UF.
 3. **Comparação** – os valores são comparados com o XML do mês anterior (em `xml/`) e o que mudou fica destacado.
 4. **Geração** – para cada combustível que mudou, o bloco antigo termina no dia anterior (ex.: 30/09/2026) e é criado
@@ -61,6 +62,7 @@ Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.
 | `xml/` | XMLs `TransparenciaTributos` de cada mês |
 | `exemplos/` | PDF de outubro/2026 e o XML gerado a partir dele, para conferência |
 | `scripts/buscar-pdf.js` | Procura e baixa o PDF novo da Fecombustíveis |
+| `scripts/gerar-xml.js` | Gera o XML do PDF novo na busca automática (mesma IA e regras do site) |
 | `scripts/buscar-painel.js` | Lê o quadro oficial de tributação (%) da página da Fecombustíveis e grava `painel.json` |
 | `scripts/embutir-recursos.js` | No deploy, embute `site.css`, `tema.js` e o logo do rodapé nas páginas |
 | `scripts/gerar-arquivos.js` | Gera `arquivos.json`, a lista de arquivos de `pdf/` e `xml/` que o site lê |
@@ -91,12 +93,27 @@ A cada push na `main`, o workflow `pages.yml` gera a lista de arquivos, grava a 
 
 ### Busca automática do PDF
 
-O workflow `buscar-pdf.yml` roda às 00:00 e 12:00 UTC (21:00 e 09:00 em Brasília):
+O workflow `buscar-pdf.yml` roda às 00:00, 08:00 e 16:00 UTC (21:00, 05:00 e 13:00 em Brasília):
 
-1. lê https://www.fecombustiveis.org.br/tributacao e pega o link do PDF "Carga tributária estadual" mais recente;
+1. lê https://www.fecombustiveis.org.br/tributacao e pega o link do PDF "Carga tributária estadual" mais recente
+   (pela data do nome, ex.: "10 OUTUBRO 2026" vem antes de "01 OUTUBRO 2026");
 2. se a página falhar, tenta o link no padrão do mês atual e do próximo;
-3. se o arquivo ainda não está em `pdf/`, salva com o mesmo nome do link, faz commit e publica o site;
-4. relê o quadro oficial de tributação da mesma página; se os percentuais mudaram, atualiza `painel.json`, faz commit e publica o site.
+3. se o arquivo ainda não está em `pdf/`, salva com o mesmo nome do link;
+4. gera o XML do PDF novo com `scripts/gerar-xml.js` (mesma IA e regras do site): a base é o XML mais recente
+   anterior à data do PDF, os combustíveis que mudaram ganham bloco novo a partir dessa data e o bloco antigo termina
+   no dia anterior. O resultado vai para `xml/TransparenciaTributos_AAAAMMDD.xml`. Se a IA falhar ou algum valor
+   não fechar a conta, o XML **não** é gravado (gere e revise no site) e as execuções seguintes tentam de novo;
+5. relê o quadro oficial de tributação da mesma página; se os percentuais mudaram, atualiza `painel.json`;
+6. se algo mudou, faz commit, publica o site e avisa por e-mail e no Discord com o resumo do que mudou.
+
+A MensagemPadrao é copiada do XML base. Se ela cita um período que já venceu (ex.: decreto até 09/10/2026),
+o aviso pede para revisá-la no site.
+
+Para testar a geração sem gravar nada: *Actions → Buscar PDF… → Run workflow* com **Só testar a geração do XML**
+marcado. O log mostra o resumo e a diferença para o XML que já está em `xml/`.
+
+Secrets usados: `GEMINI_API_KEY` (XML), `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_TO` (e-mail) e
+`DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID` (Discord). Sem os de aviso, o workflow segue e só mostra um alerta.
 
 ## Desenvolvimento local
 
