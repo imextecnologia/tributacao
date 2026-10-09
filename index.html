@@ -141,8 +141,12 @@ const $=id=>document.getElementById(id);
 const S={xml:null,atual:{},novo:null,msgs:{},tab:"gasolinaC",out:null};
 
 /* ---------- storage ---------- */
+/* Chave injetada pelo GitHub Actions a partir do secret GEMINI_API_KEY (ver .github/workflows/pages.yml) */
+const CHAVE_SITE=(k=>k.startsWith("__")?"":k)("__GEMINI_API_KEY__");
+const chave=()=>$("apiKey").value.trim()||CHAVE_SITE;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 $("apiKey").value=store.get("gemKey")||"";
+if(CHAVE_SITE)$("apiKey").placeholder="Usando a chave configurada no site (opcional: cole outra)";
 $("model").value=store.get("gemModel")||"gemini-flash-latest";
 $("apiKey").onchange=()=>store.set("gemKey",$("apiKey").value.trim());
 $("model").onchange=()=>store.set("gemModel",$("model").value.trim());
@@ -225,8 +229,8 @@ Regras:
 - Não arredonde: copie o número com as casas decimais mostradas. Liste as 27 UFs em ordem alfabética.`;
 
 async function listarModelos(){
-  const key=$("apiKey").value.trim();if(!key)return msg("cfgMsg","Informe a chave primeiro.","warn");
-  store.set("gemKey",key);
+  const key=chave();if(!key)return msg("cfgMsg","Informe a chave primeiro.","warn");
+  if($("apiKey").value.trim())store.set("gemKey",key);
   try{
     const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200",{headers:{"x-goog-api-key":key}});
     const j=await r.json();if(!r.ok)throw new Error(j.error?.message||r.status);
@@ -253,9 +257,9 @@ async function chamarModelo(key,model,body){
   return JSON.parse(txt.replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"").trim());
 }
 async function chamarGemini(pdfB64){
-  const key=$("apiKey").value.trim(),model=$("model").value.trim()||"gemini-flash-latest";
+  const key=chave(),model=$("model").value.trim()||"gemini-flash-latest";
   if(!key)throw new Error("Informe a chave da API Gemini no passo 1.");
-  store.set("gemKey",key);store.set("gemModel",model);
+  if($("apiKey").value.trim())store.set("gemKey",key);store.set("gemModel",model);
   const body={contents:[{role:"user",parts:[{inline_data:{mime_type:"application/pdf",data:pdfB64}},{text:PROMPT}]}],
     generationConfig:{temperature:0,responseMimeType:"application/json"}};
   // modelo escolhido primeiro; depois outros "flash" disponíveis na conta

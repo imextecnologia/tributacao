@@ -42,7 +42,16 @@ git remote add origin https://github.com/<seu-usuario>/tributacao.git
 git push -u origin main
 ```
 
-No GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
+No GitHub:
+
+1. **Settings → Secrets and variables → Actions → New repository secret**: nome `GEMINI_API_KEY`, valor = sua chave.
+2. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+A cada push na `main` o workflow `.github/workflows/pages.yml` grava a chave no `index.html` e publica o site,
+então ninguém precisa colar a chave no Passo 1 (quem quiser ainda pode colar outra).
+**Atenção:** a chave fica visível no código-fonte do site publicado. Restrinja-a em
+https://console.cloud.google.com/apis/credentials (*Restrições de aplicativo → Referenciadores HTTP* =
+`https://<seu-usuario>.github.io/*` e *Restrições de API* = Generative Language API).
 Em alguns minutos o site fica em `https://<seu-usuario>.github.io/tributacao/`.
 
 Para testar localmente basta abrir `index.html` no navegador.
