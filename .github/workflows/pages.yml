@@ -38,6 +38,10 @@ jobs:
       - name: Listar arquivos de pdf/ e xml/
         run: node scripts/gerar-arquivos.js
 
+      # versão nos links de CSS/JS para o navegador não usar a cópia antiga do cache
+      - name: Versionar CSS e JS
+        run: sed -i "s|href=\"site.css\"|href=\"site.css?v=${GITHUB_SHA::7}\"|; s|src=\"tema.js\"|src=\"tema.js?v=${GITHUB_SHA::7}\"|" index.html tributos.html
+
       - name: Montar site
         run: |
           mkdir -p _site pdf xml
