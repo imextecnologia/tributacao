@@ -13,8 +13,9 @@ Tudo roda no navegador; nenhum servidor próprio é necessário.
 
 ## Uso mensal
 
-1. Abra o site.
-2. **Passo 1** – selecione o PDF do mês e o XML atual (ou cole o XML). Confira as datas de vigência
+1. Coloque o PDF do mês na pasta `pdf/` e o XML atual na pasta `xml/`, faça commit e push. O deploy atualiza o site.
+2. Abra o site. **Passo 1** – o PDF e o XML mais recentes das pastas (pela data do último commit) já vêm selecionados.
+   Para usar outros arquivos, abra *Enviar arquivos manualmente* (selecione ou cole o XML). Confira as datas de vigência
    (a data de início é preenchida automaticamente com a "Referência" do PDF).
 3. Clique em **Extrair valores do PDF com IA**.
 4. **Passo 2** – revise as abas. Amarelo = mudou em relação ao XML atual; borda vermelha = conta não fecha

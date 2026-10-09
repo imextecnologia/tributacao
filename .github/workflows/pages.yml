@@ -22,6 +22,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # histórico completo: a data do último commit ordena os arquivos
 
       - name: Injetar chave do Gemini
         env:
@@ -33,10 +35,13 @@ jobs:
             sed -i "s|__GEMINI_API_KEY__|${GEMINI_API_KEY}|" index.html
           fi
 
+      - name: Listar arquivos de pdf/ e xml/
+        run: node scripts/gerar-arquivos.js
+
       - name: Montar site
         run: |
-          mkdir _site
-          cp -r index.html logo.svg favicon.ico favicon-32.png apple-touch-icon.png .nojekyll exemplos _site/
+          mkdir -p _site pdf xml
+          cp -r index.html arquivos.json logo.svg favicon.ico favicon-32.png apple-touch-icon.png .nojekyll exemplos pdf xml _site/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

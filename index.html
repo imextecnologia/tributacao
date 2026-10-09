@@ -68,15 +68,26 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 <section class="card">
   <h2><span class="step">1</span>Arquivos e vigência</h2>
   <div class="grid2">
-    <label>PDF da Fecombustíveis (Carga tributária estadual)
-      <input id="pdf" type="file" accept="application/pdf">
+    <label>PDF da Fecombustíveis (pasta pdf/)
+      <select id="pdfAuto"></select>
     </label>
-    <label>XML atual (TransparenciaTributos)
-      <input id="xmlFile" type="file" accept=".xml,text/xml">
+    <label>XML atual (pasta xml/)
+      <select id="xmlAuto"></select>
     </label>
   </div>
-  <details style="margin-top:10px"><summary class="hint">…ou cole o XML atual</summary>
-    <textarea id="xmlText" rows="6" placeholder="<TransparenciaTributos>…"></textarea>
+  <p class="hint" id="autoInfo">Carregando arquivos do repositório…</p>
+  <details id="manual" style="margin-top:10px"><summary class="hint">Enviar arquivos manualmente (substitui os da pasta)</summary>
+    <div class="grid2" style="margin-top:8px">
+      <label>PDF da Fecombustíveis (Carga tributária estadual)
+        <input id="pdf" type="file" accept="application/pdf">
+      </label>
+      <label>XML atual (TransparenciaTributos)
+        <input id="xmlFile" type="file" accept=".xml,text/xml">
+      </label>
+    </div>
+    <label style="margin-top:8px">…ou cole o XML atual
+      <textarea id="xmlText" rows="6" placeholder="<TransparenciaTributos>…"></textarea>
+    </label>
   </details>
   <div class="row" style="margin-top:12px">
     <label>Início da nova vigência <input id="dtIni" type="date"></label>
@@ -258,10 +269,30 @@ function normalizar(d){
   return o;
 }
 
+/* ---------- arquivos das pastas pdf/ e xml/ (lista gerada no deploy: scripts/gerar-arquivos.js) ---------- */
+async function carregarArquivos(){
+  let j={pdf:[],xml:[]};
+  try{const r=await fetch("arquivos.json",{cache:"no-store"});if(r.ok)j=await r.json();}catch(e){}
+  const dt=s=>new Date(s).toLocaleDateString("pt-BR");
+  const opts=(l,vazio)=>l.length?l.map(f=>`<option value="${escA(f.caminho)}">${esc(f.nome)} (${dt(f.data)})</option>`).join(""):`<option value="">${vazio}</option>`;
+  $("pdfAuto").innerHTML=opts(j.pdf||[],"(nenhum PDF na pasta pdf/)");
+  $("xmlAuto").innerHTML=opts(j.xml||[],"(nenhum XML na pasta xml/)");
+  const falta=[!(j.pdf||[]).length&&"PDF",!(j.xml||[]).length&&"XML"].filter(Boolean);
+  $("autoInfo").textContent=falta.length?`Sem ${falta.join(" e ")} no repositório — envie manualmente abaixo.`:"Selecionados automaticamente os arquivos mais recentes das pastas.";
+  if(falta.length)$("manual").open=true;
+}
+carregarArquivos();
+async function baixarArquivo(caminho){
+  const r=await fetch(encodeURI(caminho),{cache:"no-store"});
+  if(!r.ok)throw new Error(`Não foi possível abrir ${caminho} (HTTP ${r.status}).`);
+  return r.blob();
+}
+
 /* ---------- carregar XML ---------- */
 async function lerXml(){
   let t=$("xmlText").value.trim();
   if(!t&&$("xmlFile").files[0])t=await $("xmlFile").files[0].text();
+  if(!t&&$("xmlAuto").value)t=await (await baixarArquivo($("xmlAuto").value)).text();
   if(!t)throw new Error("Selecione ou cole o XML atual.");
   S.xml=parseXml(t);
   const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;
@@ -278,7 +309,8 @@ $("btnIA").onclick=async()=>{
   const btn=$("btnIA");
   try{
     await lerXml();
-    const f=$("pdf").files[0];if(!f)throw new Error("Selecione o PDF da Fecombustíveis.");
+    const f=$("pdf").files[0]||($("pdfAuto").value&&await baixarArquivo($("pdfAuto").value));
+    if(!f)throw new Error("Selecione o PDF da Fecombustíveis.");
     btn.disabled=true;msg("stepMsg","Enviando PDF para a IA… (pode levar até 1 minuto)","warn");
     const raw=await chamarGemini(await b64(f));
     const aviso=$("stepMsg").textContent.startsWith("Modelo ")?$("stepMsg").textContent+"\n":"";
