@@ -13,7 +13,7 @@ Tudo roda no navegador; nenhum servidor próprio é necessário.
 
 ## Uso mensal
 
-1. Coloque o PDF do mês na pasta `pdf/` e o XML atual na pasta `xml/`, faça commit e push. O deploy atualiza o site.
+1. O PDF do mês é baixado sozinho para `pdf/` (ver *Busca automática do PDF*). Coloque o XML atual na pasta `xml/`, faça commit e push. O deploy atualiza o site.
 2. Abra o site. **Passo 1** – o PDF e o XML mais recentes das pastas (pela data do último commit) já vêm selecionados.
    Para usar outros arquivos, abra *Enviar arquivos manualmente* (selecione ou cole o XML). Confira as datas de vigência
    (a data de início é preenchida automaticamente com a "Referência" do PDF).
@@ -30,6 +30,13 @@ Sem chave ou com limite estourado, use **Preencher a partir do XML atual** e dig
 - A chave é enviada somente ao Google. O site usa os modelos `gemini-flash-latest`, `gemini-flash-lite-latest`, `gemini-2.5-flash` e `gemini-2.5-flash-lite`, nessa ordem.
 - O plano gratuito tem limite de requisições por minuto/dia — de sobra para uso mensal. Erro 429 = aguarde um minuto.
 - No plano gratuito o Google pode usar o conteúdo enviado para melhorar seus produtos; aqui só é enviado o PDF público da Fecombustíveis.
+
+## Busca automática do PDF
+
+O workflow `.github/workflows/buscar-pdf.yml` roda a cada 12 horas (e manualmente em *Actions → Buscar PDF da Fecombustíveis → Run workflow*).
+Ele lê https://www.fecombustiveis.org.br/tributacao, pega o PDF de "Carga tributária estadual" do mês mais recente
+(se a página falhar, tenta o link do mês atual e do próximo) e, se ainda não estiver em `pdf/`, salva com o mesmo nome do link,
+faz commit e publica o site.
 
 ## Publicar no GitHub Pages
 

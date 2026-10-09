@@ -1,0 +1,46 @@
+name: Buscar PDF da Fecombustíveis
+
+on:
+  schedule:
+    - cron: "0 */12 * * *" # a cada 12 horas (00:00 e 12:00 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: buscar-pdf
+  cancel-in-progress: false
+
+jobs:
+  buscar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Procurar PDF novo
+        id: busca
+        run: node scripts/buscar-pdf.js
+
+      - name: Commit do PDF
+        if: steps.busca.outputs.novo != ''
+        env:
+          ARQUIVO: ${{ steps.busca.outputs.novo }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "pdf/$ARQUIVO"
+          git commit -m "PDF da Fecombustíveis: $ARQUIVO"
+          git push
+
+      # push feito com GITHUB_TOKEN não dispara outros workflows; publica o site explicitamente
+      - name: Publicar site
+        if: steps.busca.outputs.novo != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
