@@ -16,10 +16,10 @@ Tudo roda no navegador; nenhum servidor próprio é necessário.
 1. Abra o site.
 2. **Passo 1** – selecione o PDF do mês e o XML atual (ou cole o XML). Confira as datas de vigência
    (a data de início é preenchida automaticamente com a "Referência" do PDF).
-4. Clique em **Extrair valores do PDF com IA**.
-3. **Passo 2** – revise as abas. Amarelo = mudou em relação ao XML atual; borda vermelha = conta não fecha
+3. Clique em **Extrair valores do PDF com IA**.
+4. **Passo 2** – revise as abas. Amarelo = mudou em relação ao XML atual; borda vermelha = conta não fecha
    (PMPF × alíquota ≠ ICMS, ou PMPF × 9,25% ≠ PIS/COFINS no GNV). Ajuste a *MensagemPadrao* se o decreto mudou.
-4. **Passo 3** – *Gerar XML*, depois *Baixar XML* / *Baixar Excel*.
+5. **Passo 3** – *Gerar XML*, depois *Baixar XML* / *Baixar Excel*.
 
 Sem chave ou com limite estourado, use **Preencher a partir do XML atual** e digite os valores manualmente.
 
