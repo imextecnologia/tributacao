@@ -143,7 +143,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
   <div id="stepMsg"></div>
 </section>
 
-<section class="card" id="revCard" hidden>
+<section class="card carregando" id="revCard">
   <div class="card-h"><span class="step">2</span><div>
     <h2>Revisar valores <span class="pill" id="revInfo"></span></h2>
     <p>Confira com o PDF antes de gerar. Os valores podem ser editados direto na tabela.</p>
@@ -153,7 +153,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
     <span><i style="border:2px solid var(--bad)"></i>conta não fecha (ex.: PMPF × alíquota ≠ ICMS)</span>
   </div>
   <div class="tabs" id="tabs"></div>
-  <div id="tabBody"></div>
+  <div id="tabBody"><p class="hint">Carregando…</p></div>
 </section>
 
 <section class="card" id="outCard" hidden>
@@ -419,7 +419,8 @@ async function verificarPdf(){
   }catch(e){msg("stepMsg",e.message,"bad");}
 }
 $("pdfAuto").onchange=verificarPdf;
-carregarArquivos();
+// o card de revisão fica reservado enquanto carrega (evita layout shift); se nada foi aberto, some no fim
+carregarArquivos().finally(()=>{const rc=$("revCard");if(rc.classList.contains("carregando")){rc.classList.remove("carregando");rc.hidden=true;}});
 async function baixarArquivo(caminho){
   const r=await fetch(encodeURI(caminho),{cache:"no-store"});
   if(!r.ok)throw new Error(`Não foi possível abrir ${caminho} (HTTP ${r.status}).`);
@@ -489,6 +490,7 @@ function statusProduto(p){
 /* ---------- revisão UI ---------- */
 function abrirRevisao(origem){
   S.msgOverride={...S.msgs};
+  $("revCard").classList.remove("carregando");
   $("revCard").hidden=false;$("outCard").hidden=false;$("revInfo").textContent="origem: "+origem;
   S.out=null;$("xmlOut").hidden=true;["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=true);msg("genMsg","");
   render();

@@ -34,6 +34,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 :root[data-theme=dark]{--die:#5a6fe0;--eta:#2fa35c;--tb-head:#2c4a62;--tb-uf:#1a2433;--tb-total:#4a4413;--tb-total-fg:#fff3a0}
 .ref{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:4px}
 .ref strong{font-size:15px}
+#ref{display:inline-block;min-width:10.5em}
 .ref .btn-top{height:34px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .chips a{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:99px;color:var(--fg);text-decoration:none;font-size:13px;font-weight:500;background:var(--card)}
@@ -255,6 +256,12 @@ function tabela(p,linhas,msgs){
   </section>`;
 }
 
+const chips=l=>l.map(p=>`<a href="#${p.k}"><i style="background:${p.cor}"></i>${esc(p.nome.replace(" (comum ou aditivada)",""))}</a>`).join("");
+// estrutura vazia desenhada já no carregamento: os valores entram depois sem empurrar o layout (CLS)
+resumo({});
+$("chips").innerHTML=chips(COMB);
+$("tabelas").innerHTML=COMB.map(p=>tabela(p,{},[])).join("");
+
 (async()=>{
   try{
     const r=await fetch("arquivos.json",{cache:"no-store"});if(!r.ok)throw new Error("Lista de arquivos indisponível.");
@@ -272,10 +279,10 @@ function tabela(p,linhas,msgs){
     const {out,msgs}=extrair(doc,xml.ref);
     resumo(out);
     const lista=COMB.filter(p=>out[p.k]);
-    $("chips").innerHTML=lista.map(p=>`<a href="#${p.k}"><i style="background:${p.cor}"></i>${esc(p.nome.replace(" (comum ou aditivada)",""))}</a>`).join("");
+    $("chips").innerHTML=chips(lista);
     $("tabelas").innerHTML=lista.map(p=>tabela(p,out[p.k],msgs[p.k]||[])).join("");
   }catch(e){
-    $("ref").textContent="—";
+    $("ref").textContent="—";$("chips").innerHTML="";$("tabelas").innerHTML="";
     $("erro").innerHTML=`<div class="msg bad"></div>`;$("erro").firstChild.textContent="Não foi possível carregar os dados: "+e.message;
   }
 })();

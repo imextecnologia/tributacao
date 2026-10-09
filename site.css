@@ -73,6 +73,11 @@ details.manual[open] summary{margin-bottom:12px}
 .msg{padding:9px 12px;border-radius:8px;margin-top:12px;font-size:13px;white-space:pre-wrap}
 .msg.ok{background:var(--okbg);color:var(--ok)}.msg.warn{background:var(--warnbg);color:var(--warn)}.msg.bad{background:var(--badbg);color:var(--bad)}
 .pill{font-size:11px;font-weight:500;padding:2px 9px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+.pill:empty{display:none}
+/* espaço reservado para o que só aparece após carregar os arquivos (evita layout shift) */
+#autoInfo{min-height:calc(3em + 18px)}
+#dtOld{min-height:3em}
+#revCard.carregando #tabBody{min-height:560px}
 /* revisão */
 .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted);margin:-4px 0 14px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
@@ -146,6 +151,7 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
   pre{max-height:300px}
   .actions button{flex:1 1 100%}
   .card{padding:16px}
+  #autoInfo{min-height:calc(6em + 18px)}
 }
 @media (max-width:900px){.rodape-in{grid-template-columns:1fr 1fr}}
 @media (max-width:560px){.rodape-in{grid-template-columns:1fr;padding:36px 16px;gap:28px}.rodape nav{gap:14px}.rodape .slogan{font-size:16px}}
