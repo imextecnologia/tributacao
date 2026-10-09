@@ -10,74 +10,136 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#dfe3ea;--acc:#1f6feb;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff7c2}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--card:#171b23;--fg:#e6e9ef;--muted:#9aa3b2;--line:#2a303c;--acc:#4c8dff;--acc2:#1b2638;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413}}
+:root{color-scheme:light;--bg:#f4f6f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#e1e5ec;--field:#f9fafb;--acc:#1f6feb;--acc-h:#1a5fcc;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff3b0;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{padding:20px 16px 8px;max-width:1200px;margin:auto}
-h1{font-size:22px;margin:0}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--acc)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.92em;background:var(--acc2);padding:1px 5px;border-radius:4px}
+/* topo */
+.top{background:var(--card);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:auto;padding:14px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
 .brand img{flex:none;border-radius:10px}
-.brand .imex{font-weight:800;letter-spacing:.2px}
-.brand .sep{color:var(--muted);font-weight:300;margin:0 10px}
-header p{margin:0;color:var(--muted)}
-main{max-width:1200px;margin:auto;padding:8px 16px 60px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
-.card h2{font-size:16px;margin:0 0 12px;display:flex;gap:8px;align-items:center}
-.step{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px}
-.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
-label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
-input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
-input[type=file]{padding:5px}
-textarea{width:100%;min-height:60px;resize:vertical}
-button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:8px 14px;cursor:pointer}
-button.sec{background:transparent;color:var(--acc)}
-button:disabled{opacity:.5;cursor:default}
-.hint{font-size:12px;color:var(--muted)}
-.msg{padding:8px 12px;border-radius:6px;margin-top:10px;font-size:13px;white-space:pre-wrap}
+h1{font-size:19px;margin:0;line-height:1.25}
+.brand .imex{font-weight:800}
+.brand .sep{color:var(--muted);font-weight:300;margin:0 8px}
+.brand small{display:block;font-size:12.5px;font-weight:400;color:var(--muted);margin-top:2px}
+.top .links{margin-left:auto;display:flex;gap:14px;font-size:13px}
+.top .links a{text-decoration:none}.top .links a:hover{text-decoration:underline}
+/* passos */
+main{max-width:1180px;margin:auto;padding:20px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 16px;box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.card-h h2{font-size:16px;margin:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card-h p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.step{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px;font-weight:700}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.box h3{margin:0;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:500;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc2)}
+input[type=file]{padding:6px}
+textarea{min-height:60px;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.dates{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid>*,.grid2>*,.dates>*,.card-h>div{min-width:0}
+input,select{min-width:0;text-overflow:ellipsis}
+button{font:inherit;font-weight:600;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:9px 16px;cursor:pointer;transition:background .15s,border-color .15s}
+button:hover:not(:disabled){background:var(--acc-h);border-color:var(--acc-h)}
+button:focus-visible{outline:none;box-shadow:0 0 0 3px var(--acc2)}
+button.sec{background:transparent;color:var(--acc);border-color:var(--line)}
+button.sec:hover:not(:disabled){background:var(--acc2);border-color:var(--acc)}
+button:disabled{opacity:.45;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.hint{font-size:12.5px;color:var(--muted)}
+.note{font-size:13px;color:var(--fg);background:var(--acc2);border-radius:8px;padding:9px 12px;margin:0}
+details.manual{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;margin-top:14px}
+details.manual summary{cursor:pointer;font-size:13px;color:var(--muted);font-weight:500}
+details.manual[open] summary{margin-bottom:12px}
+.msg{padding:9px 12px;border-radius:8px;margin-top:12px;font-size:13px;white-space:pre-wrap}
 .msg.ok{background:var(--okbg);color:var(--ok)}.msg.warn{background:var(--warnbg);color:var(--warn)}.msg.bad{background:var(--badbg);color:var(--bad)}
-.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.tabs button{background:transparent;color:var(--fg);border-color:var(--line)}
+.pill{font-size:11px;font-weight:500;padding:2px 9px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+/* revisão */
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--muted);margin:-4px 0 14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tabs button{background:transparent;color:var(--fg);border-color:var(--line);font-weight:500;padding:7px 12px}
+.tabs button:hover:not(:disabled){background:var(--acc2);color:var(--fg);border-color:var(--line)}
 .tabs button.on{background:var(--acc2);border-color:var(--acc);color:var(--acc)}
-.tabs .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;background:var(--line)}
-.tabs .dot.chg{background:var(--warn)}.tabs .dot.err{background:var(--bad)}
-.tw{overflow-x:auto}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:7px;background:var(--line);vertical-align:middle}
+.dot.chg{background:var(--warn)}.dot.err{background:var(--bad)}
+.tw{overflow:auto;max-height:560px;border:1px solid var(--line);border-radius:10px}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
-th,td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:right;white-space:nowrap}
-th{font-size:12px;color:var(--muted);font-weight:600;position:sticky;top:0;background:var(--card)}
-td:first-child,th:first-child{text-align:left}
-td input{width:90px;text-align:right;padding:4px 6px}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:var(--field)}
+th{font-size:12px;color:var(--muted);font-weight:600;position:sticky;top:0;background:var(--card);z-index:1}
+td:first-child,th:first-child{text-align:left;font-weight:600}
+td input{width:100px;text-align:right;padding:5px 8px}
 td.chg input{background:var(--chg)}
-td.err input{outline:2px solid var(--bad)}
-.old{color:var(--muted);font-size:12px}
-pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;max-height:380px;overflow:auto;font-size:12px}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.pill{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--acc2);color:var(--acc)}
+td.err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
+.old{color:var(--muted);font-size:11.5px;margin-top:2px}
+#tabBody label{margin-top:14px}
+/* saída */
+pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:420px;overflow:auto;font-size:12px;margin:14px 0 0}
+footer{max-width:1180px;margin:auto;padding:0 16px 32px;font-size:12px;color:var(--muted);text-align:center}
+@media (max-width:760px){
+  .grid{grid-template-columns:1fr}
+  .top .links{margin-left:0}
+  .actions button{flex:1 1 100%}
+  .card{padding:16px}
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <img src="logo.svg" alt="Imex" width="44" height="44">
-    <h1><span class="imex">Imex</span><span class="sep">|</span>Transparência de Tributos – Combustíveis</h1>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <img src="logo.svg" alt="Imex" width="40" height="40">
+      <h1><span class="imex">Imex</span><span class="sep">|</span>Transparência de Tributos – Combustíveis
+        <small>Atualização mensal do XML TransparenciaTributos a partir do PDF da Fecombustíveis</small></h1>
+    </div>
+    <nav class="links">
+      <a href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener">Fecombustíveis ↗</a>
+      <a href="https://github.com/imextecnologia/tributacao" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
   </div>
-  <p>Lê o PDF mensal da Fecombustíveis com IA gratuita (Google Gemini), compara com o XML atual e gera o XML novo com as vigências corretas, além da planilha Excel.</p>
 </header>
 <main>
 
 <section class="card">
-  <h2><span class="step">1</span>Arquivos e vigência</h2>
-  <div class="grid2">
-    <label>PDF da Fecombustíveis (pasta pdf/)
-      <select id="pdfAuto"></select>
-    </label>
-    <label>XML atual (pasta xml/)
-      <select id="xmlAuto"></select>
-    </label>
+  <div class="card-h"><span class="step">1</span><div>
+    <h2>Arquivos e vigência</h2>
+    <p>O PDF e o XML vêm das pastas <code>pdf/</code> e <code>xml/</code> do repositório.</p>
+  </div></div>
+  <div class="grid">
+    <div class="box">
+      <h3>Arquivos</h3>
+      <div class="grid2">
+        <label>PDF da Fecombustíveis
+          <select id="pdfAuto"></select>
+        </label>
+        <label>XML base (mês anterior)
+          <select id="xmlAuto"></select>
+        </label>
+      </div>
+      <p class="note" id="autoInfo">Carregando arquivos do repositório…</p>
+    </div>
+    <div class="box">
+      <h3>Nova vigência</h3>
+      <div class="dates">
+        <label>Início <input id="dtIni" type="date"></label>
+        <label>Fim <input id="dtFim" type="date" value="2050-01-01"></label>
+      </div>
+      <span class="hint" id="dtOld"></span>
+    </div>
   </div>
-  <p class="hint" id="autoInfo">Carregando arquivos do repositório…</p>
-  <details id="manual" style="margin-top:10px"><summary class="hint">Enviar arquivos manualmente (substitui os da pasta)</summary>
-    <div class="grid2" style="margin-top:8px">
+  <details id="manual" class="manual"><summary>Enviar arquivos manualmente (substitui os das pastas)</summary>
+    <div class="grid2">
       <label>PDF da Fecombustíveis (Carga tributária estadual)
         <input id="pdf" type="file" accept="application/pdf">
       </label>
@@ -85,31 +147,35 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
         <input id="xmlFile" type="file" accept=".xml,text/xml">
       </label>
     </div>
-    <label style="margin-top:8px">…ou cole o XML atual
+    <label style="margin-top:12px">…ou cole o XML atual
       <textarea id="xmlText" rows="6" placeholder="<TransparenciaTributos>…"></textarea>
     </label>
   </details>
-  <div class="row" style="margin-top:12px">
-    <label>Início da nova vigência <input id="dtIni" type="date"></label>
-    <label>Fim da nova vigência <input id="dtFim" type="date" value="2050-01-01"></label>
-    <span class="hint" id="dtOld"></span>
-  </div>
-  <div class="row" style="margin-top:14px">
+  <div class="actions">
     <button id="btnIA">Extrair valores do PDF com IA</button>
-    <button class="sec" id="btnManual">Preencher a partir do XML atual (edição manual)</button>
+    <button class="sec" id="btnManual">Preencher a partir do XML (edição manual)</button>
   </div>
   <div id="stepMsg"></div>
 </section>
 
 <section class="card" id="revCard" hidden>
-  <h2><span class="step">2</span>Revisar valores <span class="pill" id="revInfo"></span></h2>
-  <p class="hint">Células em amarelo mudaram em relação ao XML atual (valor antigo abaixo). Bordas vermelhas indicam conta que não fecha (ex.: PMPF × alíquota ≠ ICMS). Confira com o PDF antes de gerar.</p>
+  <div class="card-h"><span class="step">2</span><div>
+    <h2>Revisar valores <span class="pill" id="revInfo"></span></h2>
+    <p>Confira com o PDF antes de gerar. Os valores podem ser editados direto na tabela.</p>
+  </div></div>
+  <div class="legend">
+    <span><i style="background:var(--chg);border:1px solid var(--warn)"></i>mudou em relação ao XML base (valor antigo abaixo)</span>
+    <span><i style="border:2px solid var(--bad)"></i>conta não fecha (ex.: PMPF × alíquota ≠ ICMS)</span>
+  </div>
   <div class="tabs" id="tabs"></div>
   <div id="tabBody"></div>
 </section>
 
 <section class="card" id="outCard" hidden>
-  <h2><span class="step">3</span>Gerar arquivos</h2>
+  <div class="card-h"><span class="step">3</span><div>
+    <h2>Gerar arquivos</h2>
+    <p>Gere o XML, baixe e salve em <code>xml/</code> no repositório.</p>
+  </div></div>
   <div class="row">
     <button id="btnGen">Gerar XML</button>
     <button class="sec" id="btnDlXml" disabled>Baixar XML</button>
@@ -121,6 +187,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 </section>
 
 </main>
+<footer>Os valores são lidos por IA (Google Gemini) e podem conter erros — sempre confira com o PDF oficial.</footer>
 <script>
 "use strict";
 const UFS="AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO".split(" ");
@@ -410,7 +477,7 @@ function render(){
   const cell=(val,old,k,i,bad)=>{const c=!same(val,old);return `<td class="${c?"chg":""} ${bad?"err":""}"><input data-k="${k}" data-i="${i}" value="${val===null?"":fmt(val)}">${c?`<div class="old">antes: ${old===null||old===undefined?"—":fmt(old)}</div>`:""}</td>`;};
   let h;
   if(p.tipo==="unico"){const a=linhaAntiga(p)||{};
-    h=`<table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table>`;
+    h=`<div class="tw"><table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table></div>`;
   }else{
     const pm=p.key==="gnv"?"PMPF (R$/m³)":"PMPF (R$/L)";
     h=`<div class="tw"><table><tr><th>UF</th><th>Alíquota ICMS %</th><th>${pm}</th><th>ICMS (R$)</th><th>Federal PIS/COFINS (R$)</th><th>Total</th></tr>`+
