@@ -45,7 +45,7 @@ Se a IA estiver indisponível, use **Preencher a partir do XML (edição manual)
 `tributos.html` mostra a tributação dos combustíveis no formato da [página da Fecombustíveis](https://www.fecombustiveis.org.br/tributacao/tributos):
 
 - **Referência** (ex.: 01 Outubro de 2026), tirada da data do XML mais recente de `xml/`, com link para o PDF do mesmo mês;
-- **resumo** com a média Brasil de tributos totais, ICMS e PIS/COFINS + CIDE para gasolina, diesel, etanol e GNV;
+- **resumo** com o quadro oficial de tributação (%) da Fecombustíveis e, abaixo, a média Brasil em R$ de tributos totais, ICMS e PIS/COFINS + CIDE para gasolina, diesel, etanol e GNV;
 - **tabelas por estado** de Gasolina C, Gasolina Premium, Diesel S-500, Diesel S-10, Etanol hidratado e GNV.
 
 Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.
@@ -61,9 +61,11 @@ Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.
 | `xml/` | XMLs `TransparenciaTributos` de cada mês |
 | `exemplos/` | PDF de outubro/2026 e o XML gerado a partir dele, para conferência |
 | `scripts/buscar-pdf.js` | Procura e baixa o PDF novo da Fecombustíveis |
+| `scripts/buscar-painel.js` | Lê o quadro oficial de tributação (%) da página da Fecombustíveis e grava `painel.json` |
+| `scripts/embutir-recursos.js` | No deploy, embute `site.css`, `tema.js` e o logo do rodapé nas páginas |
 | `scripts/gerar-arquivos.js` | Gera `arquivos.json`, a lista de arquivos de `pdf/` e `xml/` que o site lê |
 | `.github/workflows/pages.yml` | Publica o site a cada push na `main` |
-| `.github/workflows/buscar-pdf.yml` | Roda a busca do PDF a cada 12 horas |
+| `.github/workflows/buscar-pdf.yml` | Roda a busca do PDF e do quadro de tributação a cada 12 horas |
 
 ## Configuração (uma vez)
 
@@ -93,7 +95,8 @@ O workflow `buscar-pdf.yml` roda às 00:00 e 12:00 UTC (21:00 e 09:00 em Brasíl
 
 1. lê https://www.fecombustiveis.org.br/tributacao e pega o link do PDF "Carga tributária estadual" mais recente;
 2. se a página falhar, tenta o link no padrão do mês atual e do próximo;
-3. se o arquivo ainda não está em `pdf/`, salva com o mesmo nome do link, faz commit e publica o site.
+3. se o arquivo ainda não está em `pdf/`, salva com o mesmo nome do link, faz commit e publica o site;
+4. relê o quadro oficial de tributação da mesma página; se os percentuais mudaram, atualiza `painel.json`, faz commit e publica o site.
 
 ## Desenvolvimento local
 

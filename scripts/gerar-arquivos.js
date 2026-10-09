@@ -20,14 +20,14 @@ console.log(`arquivos.json: ${out.pdf.length} PDF(s), ${out.xml.length} XML(s)`)
 
 // --html (deploy): embute a lista nas páginas e pré-carrega o XML mais recente em tributos.html,
 // para o navegador não esperar o arquivos.json antes de pedir o XML (cadeia de requisições críticas).
-// Em tributos.html embute também os preços da ANP (precos.json), usados nas % do resumo.
+// Em tributos.html embute também o quadro oficial de tributação da Fecombustíveis (painel.json), mostrado no resumo.
 if(process.argv.includes("--html")){
   const js=v=>JSON.stringify(v).replace(/</g,"\\u003c");
   const lista=`<script>window.ARQUIVOS=${js(out)};</script>\n`;
-  const pj=path.join(raiz,"precos.json"),precos=fs.existsSync(pj)?`<script>window.PRECOS=${js(JSON.parse(fs.readFileSync(pj,"utf8")))};</script>\n`:"";
+  const pj=path.join(raiz,"painel.json"),painel=fs.existsSync(pj)?`<script>window.PAINEL=${js(JSON.parse(fs.readFileSync(pj,"utf8")))};</script>\n`:"";
   const ultimo=out.xml.filter(f=>/\d{8}/.test(f.nome)).sort((a,b)=>b.nome.match(/\d{8}/)[0].localeCompare(a.nome.match(/\d{8}/)[0]))[0];
   const marca='<link rel="stylesheet" href="site.css"';
-  for(const [arq,extra] of [["index.html",""],["tributos.html",(ultimo?`<link rel="preload" href="${encodeURI(ultimo.caminho)}" as="fetch" crossorigin>\n`:"")+precos]]){
+  for(const [arq,extra] of [["index.html",""],["tributos.html",(ultimo?`<link rel="preload" href="${encodeURI(ultimo.caminho)}" as="fetch" crossorigin>\n`:"")+painel]]){
     const p=path.join(raiz,arq),s=fs.readFileSync(p,"utf8");
     if(!s.includes(marca))throw new Error(`${arq}: link do site.css não encontrado`);
     fs.writeFileSync(p,s.replace(marca,extra+lista+marca));

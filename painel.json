@@ -1,0 +1,51 @@
+{
+  "fonte": "https://www.fecombustiveis.org.br/tributacao",
+  "colunas": [
+    "GASOLINA",
+    "DIESEL",
+    "ETANOL",
+    "GNV"
+  ],
+  "linhas": [
+    {
+      "rotulo": "TRIBUTAÇÃO",
+      "det": "Brasil : MÉDIA 2021",
+      "valores": [
+        "39,0%",
+        "19,8%",
+        "24,3%",
+        "22,8%"
+      ]
+    },
+    {
+      "rotulo": "ICMS",
+      "det": "(imposto estadual, varia conforme o estado)",
+      "valores": [
+        "27,1%",
+        "13,8%",
+        "18,7%",
+        "14,3%"
+      ]
+    },
+    {
+      "rotulo": "PIS/COFINS",
+      "det": "(imposto federal)",
+      "valores": [
+        "10,6%",
+        "6,0%",
+        "5,6%",
+        "8,5%"
+      ]
+    },
+    {
+      "rotulo": "CIDE",
+      "det": "(imposto federal)",
+      "valores": [
+        "1,3%",
+        "0,0%",
+        "0,0%",
+        "0,0%"
+      ]
+    }
+  ]
+}

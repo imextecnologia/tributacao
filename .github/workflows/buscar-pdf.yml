@@ -1,4 +1,4 @@
-name: Buscar PDF da Fecombustíveis e preços da ANP
+name: Buscar PDF e quadro de tributação da Fecombustíveis
 
 on:
   schedule:
@@ -27,30 +27,30 @@ jobs:
         id: busca
         run: node scripts/buscar-pdf.js
 
-      # preço médio de bomba (média Brasil) do levantamento semanal da ANP, usado nas % do resumo;
-      # se a ANP falhar, segue sem atualizar os preços
-      - name: Procurar preços novos da ANP
-        id: precos
+      # quadro oficial de tributação (% por combustível) da página da Fecombustíveis, mostrado no resumo;
+      # se a leitura falhar, segue sem atualizar o quadro
+      - name: Atualizar quadro oficial de tributação
+        id: painel
         continue-on-error: true
-        run: node scripts/buscar-precos.js
+        run: node scripts/buscar-painel.js
 
-      - name: Commit do PDF e dos preços
-        if: steps.busca.outputs.novo != '' || steps.precos.outputs.novo != ''
+      - name: Commit do PDF e do quadro
+        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
         env:
           ARQUIVO: ${{ steps.busca.outputs.novo }}
-          SEMANA: ${{ steps.precos.outputs.novo }}
+          PAINEL: ${{ steps.painel.outputs.novo }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           msg=""
           if [ -n "$ARQUIVO" ]; then git add "pdf/$ARQUIVO"; msg="PDF da Fecombustíveis: $ARQUIVO"; fi
-          if [ -n "$SEMANA" ]; then git add precos.json; msg="${msg:+$msg; }Preços ANP: semana $SEMANA"; fi
+          if [ -n "$PAINEL" ]; then git add painel.json; msg="${msg:+$msg; }Quadro de tributação da Fecombustíveis atualizado"; fi
           git commit -m "$msg"
           git push
 
       # push feito com GITHUB_TOKEN não dispara outros workflows; publica o site explicitamente
       - name: Publicar site
-        if: steps.busca.outputs.novo != '' || steps.precos.outputs.novo != ''
+        if: steps.busca.outputs.novo != '' || steps.painel.outputs.novo != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run pages.yml --ref main
