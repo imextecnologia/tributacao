@@ -270,17 +270,65 @@ function normalizar(d){
 }
 
 /* ---------- arquivos das pastas pdf/ e xml/ (lista gerada no deploy: scripts/gerar-arquivos.js) ---------- */
+const MESES=["JANEIRO","FEVEREIRO","MARCO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+const AUTO={pdf:[],xml:[]};
+// "Carga tributria estadual - 01 OUTUBRO 2026.pdf" → "2026-10-01"
+function dataDoPdf(nome){
+  const m=nome.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().match(/(\d{1,2})\s+([A-Z]+)\s+(\d{4})/);
+  const i=m?MESES.indexOf(m[2]):-1;
+  return i<0?"":`${m[3]}-${String(i+1).padStart(2,"0")}-${m[1].padStart(2,"0")}`;
+}
+// "TransparenciaTributos_20261001.xml" → "2026-10-01"
+function dataDoXml(nome){const m=nome.match(/(\d{4})(\d{2})(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:"";}
+const cache={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
 async function carregarArquivos(){
   let j={pdf:[],xml:[]};
   try{const r=await fetch("arquivos.json",{cache:"no-store"});if(r.ok)j=await r.json();}catch(e){}
-  const dt=s=>new Date(s).toLocaleDateString("pt-BR");
-  const opts=(l,vazio)=>l.length?l.map(f=>`<option value="${escA(f.caminho)}">${esc(f.nome)} (${dt(f.data)})</option>`).join(""):`<option value="">${vazio}</option>`;
-  $("pdfAuto").innerHTML=opts(j.pdf||[],"(nenhum PDF na pasta pdf/)");
-  $("xmlAuto").innerHTML=opts(j.xml||[],"(nenhum XML na pasta xml/)");
-  const falta=[!(j.pdf||[]).length&&"PDF",!(j.xml||[]).length&&"XML"].filter(Boolean);
-  $("autoInfo").textContent=falta.length?`Sem ${falta.join(" e ")} no repositório — envie manualmente abaixo.`:"Selecionados automaticamente os arquivos mais recentes das pastas.";
-  if(falta.length)$("manual").open=true;
+  // mais recente primeiro pela data no nome do arquivo (se não houver, data do commit)
+  AUTO.pdf=(j.pdf||[]).map(f=>({...f,ref:dataDoPdf(f.nome)||f.data})).sort((a,b)=>b.ref.localeCompare(a.ref));
+  AUTO.xml=(j.xml||[]).map(f=>({...f,ref:dataDoXml(f.nome)||f.data})).sort((a,b)=>b.ref.localeCompare(a.ref));
+  const opts=(l,vazio)=>l.length?l.map(f=>`<option value="${escA(f.caminho)}">${esc(f.nome)}</option>`).join(""):`<option value="">${vazio}</option>`;
+  $("pdfAuto").innerHTML=opts(AUTO.pdf,"(nenhum PDF na pasta pdf/)");
+  $("xmlAuto").innerHTML=opts(AUTO.xml,"(nenhum XML na pasta xml/)");
+  const falta=[!AUTO.pdf.length&&"PDF",!AUTO.xml.length&&"XML"].filter(Boolean);
+  if(falta.length){$("autoInfo").textContent=`Sem ${falta.join(" e ")} no repositório — envie manualmente abaixo.`;$("manual").open=true;}
+  await verificarPdf();
 }
+// Para o PDF selecionado: usa como base o XML anterior ao mês do PDF; se o XML do mês já existe em xml/, mostra ele
+// (sem chamar a IA); senão, se a IA já leu esse PDF neste navegador, reaproveita o resultado.
+async function verificarPdf(){
+  const pdf=AUTO.pdf.find(f=>f.caminho===$("pdfAuto").value);if(!pdf||!AUTO.xml.length)return;
+  const alvo=dataDoPdf(pdf.nome);
+  if(alvo){$("dtIni").value=alvo;updDtOld();}
+  const base=AUTO.xml.find(f=>alvo&&f.ref<alvo)||AUTO.xml[0];
+  $("xmlAuto").value=base.caminho;
+  const pronto=alvo&&AUTO.xml.find(f=>f.ref===alvo);
+  try{
+    if(pronto){
+      await lerXml();
+      const texto=await (await baixarArquivo(pronto.caminho)).text();
+      const r=extrairAtual(parseXml(texto),alvo);
+      S.novo=r.atual;
+      for(const p of PRODUTOS)if(p.tipo==="uf"&&!S.novo[p.key])S.novo[p.key]=UFS.map(uf=>({uf,pmpf:null,aliquota:null,federal:null,estadual:null}));
+      abrirRevisao("já está na pasta xml/");S.msgOverride=r.msgs;render();
+      S.out=texto;$("xmlOut").hidden=false;$("xmlOut").textContent=texto;
+      ["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=false);
+      $("autoInfo").textContent=`O XML deste PDF já existe (${pronto.nome}) — carregado sem chamar a IA. Comparado com ${base.nome}.`;
+      msg("stepMsg","");
+      return;
+    }
+    const salvo=cache.get("ia:"+pdf.caminho);
+    if(salvo){
+      await lerXml();S.novo=salvo;
+      abrirRevisao("IA (resultado salvo neste navegador)");
+      $("autoInfo").textContent=`Valores deste PDF já extraídos pela IA anteriormente — reaproveitados. Para extrair de novo, clique em "Extrair valores do PDF com IA".`;
+      return;
+    }
+    $("autoInfo").textContent=`Base: ${base.nome}. Clique em "Extrair valores do PDF com IA" para gerar o XML de ${alvo.split("-").reverse().join("/")}.`;
+  }catch(e){msg("stepMsg",e.message,"bad");}
+}
+$("pdfAuto").onchange=verificarPdf;
 carregarArquivos();
 async function baixarArquivo(caminho){
   const r=await fetch(encodeURI(caminho),{cache:"no-store"});
@@ -315,6 +363,7 @@ $("btnIA").onclick=async()=>{
     const raw=await chamarGemini(await b64(f));
     const aviso=$("stepMsg").textContent.startsWith("Modelo ")?$("stepMsg").textContent+"\n":"";
     S.novo=normalizar(raw);
+    if(!$("pdf").files[0])cache.set("ia:"+$("pdfAuto").value,S.novo);
     if(S.novo.dataReferencia&&/^\d{4}-\d{2}-\d{2}$/.test(S.novo.dataReferencia)){$("dtIni").value=S.novo.dataReferencia;updDtOld();
       const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;}
     msg("stepMsg",aviso+"Valores extraídos. Revise abaixo antes de gerar — a IA pode errar dígitos.","ok");
