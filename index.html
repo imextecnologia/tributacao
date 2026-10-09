@@ -66,9 +66,9 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 <link rel="preconnect" href="https://generativelanguage.googleapis.com" crossorigin>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{color-scheme:light;--bg:#f4f6f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#e1e5ec;--field:#f9fafb;--acc:#1f6feb;--acc-h:#1a5fcc;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff3b0;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06)}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none}}
-:root[data-theme=dark]{color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none}
+:root{color-scheme:light;--bg:#f4f6f9;--card:#fff;--fg:#1d2330;--muted:#5d6678;--line:#e1e5ec;--field:#f9fafb;--acc:#1f6feb;--acc-h:#1a5fcc;--acc2:#e8f0fe;--ok:#1a7f37;--okbg:#e6f4ea;--warn:#9a6700;--warnbg:#fff4d6;--bad:#cf222e;--badbg:#ffebe9;--chg:#fff3b0;--shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);--ft-bg:#fff;--ft-fg:#1d2330;--ft-line:#e1e5ec;--ft-logo:brightness(0)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none;--ft-bg:#000;--ft-fg:#fff;--ft-line:#000;--ft-logo:none}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0d1016;--card:#151a22;--fg:#e6e9ef;--muted:#9aa3b2;--line:#262d39;--field:#10141b;--acc:#4c8dff;--acc-h:#6aa1ff;--acc2:#18233a;--ok:#3fb950;--okbg:#12261a;--warn:#d29922;--warnbg:#2b2311;--bad:#f85149;--badbg:#2d1517;--chg:#3a3413;--shadow:none;--ft-bg:#000;--ft-fg:#fff;--ft-line:#000;--ft-logo:none}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 a{color:var(--acc)}
@@ -158,11 +158,11 @@ pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padd
 .sobre strong{color:var(--fg);font-weight:600}
 .aviso{max-width:1180px;margin:auto;padding:0 16px 28px;font-size:12px;color:var(--muted);text-align:center}
 /* rodapé Imex */
-.rodape{background:#000;color:#fff}
+.rodape{background:var(--ft-bg);color:var(--ft-fg);border-top:1px solid var(--ft-line)}
 .rodape-in{max-width:1180px;margin:auto;padding:44px 16px;display:grid;grid-template-columns:1.2fr 1.3fr 1fr 1fr;gap:32px 40px;align-items:start}
-.rodape a{color:#fff;text-decoration:none}
-.rodape a:hover{color:#4d8bff}
-.rodape .logo img{display:block;width:200px;max-width:100%;height:auto}
+.rodape a{color:var(--ft-fg);text-decoration:none}
+.rodape a:hover{color:var(--acc)}
+.rodape .logo img{filter:var(--ft-logo);display:block;width:200px;max-width:100%;height:auto}
 .rodape .slogan{margin:24px 0 0;font-size:18px;line-height:1.35}
 .rodape .contato p{margin:0 0 14px;font-size:17px}
 .rodape .contato span{color:#1f63ff}
