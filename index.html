@@ -489,6 +489,7 @@ function statusProduto(p){
 }
 
 /* ---------- revisão UI ---------- */
+const ROTULO={federal:"Tributo federal",estadual:"ICMS",mistura:"% Mistura",aliquota:"Alíquota ICMS",pmpf:"PMPF"};
 function abrirRevisao(origem){
   S.msgOverride={...S.msgs};
   $("revCard").classList.remove("carregando");
@@ -500,7 +501,7 @@ function render(){
   $("tabs").innerHTML=PRODUTOS.map(p=>{const s=statusProduto(p);return `<button data-k="${p.key}" class="${S.tab===p.key?"on":""}">${p.nome}<span class="dot ${s.err?"err":s.chg?"chg":""}"></span></button>`}).join("");
   $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.k;render();});
   const p=PRODUTOS.find(x=>x.key===S.tab),n=S.novo[p.key];
-  const cell=(val,old,k,i,bad)=>{const c=!same(val,old);return `<td class="${c?"chg":""} ${bad?"err":""}"><input data-k="${k}" data-i="${i}" value="${val===null?"":fmt(val)}">${c?`<div class="old">antes: ${old===null||old===undefined?"—":fmt(old)}</div>`:""}</td>`;};
+  const cell=(val,old,k,i,bad)=>{const c=!same(val,old);return `<td class="${c?"chg":""} ${bad?"err":""}"><input aria-label="${ROTULO[k]}${i<0?"":" – "+n[i].uf}" data-k="${k}" data-i="${i}" value="${val===null?"":fmt(val)}">${c?`<div class="old">antes: ${old===null||old===undefined?"—":fmt(old)}</div>`:""}</td>`;};
   let h;
   if(p.tipo==="unico"){const a=linhaAntiga(p)||{};
     h=`<div class="tw"><table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table></div>`;

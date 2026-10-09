@@ -38,9 +38,9 @@ jobs:
       - name: Listar arquivos de pdf/ e xml/
         run: node scripts/gerar-arquivos.js --html
 
-      # versão nos links de CSS/JS para o navegador não usar a cópia antiga do cache
-      - name: Versionar CSS e JS
-        run: sed -i "s|href=\"site.css\"|href=\"site.css?v=${GITHUB_SHA::7}\"|; s|src=\"tema.js\"|src=\"tema.js?v=${GITHUB_SHA::7}\"|" index.html tributos.html
+      # CSS, JS e logo do rodapé dentro do HTML: o Pages só dá 10 min de cache para arquivos separados
+      - name: Embutir CSS, JS e logo nas páginas
+        run: node scripts/embutir-recursos.js
 
       - name: Montar site
         run: |
