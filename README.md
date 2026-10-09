@@ -45,7 +45,7 @@ Se a IA estiver indisponível, use **Preencher a partir do XML (edição manual)
 `tributos.html` mostra a tributação dos combustíveis no formato da [página da Fecombustíveis](https://www.fecombustiveis.org.br/tributacao/tributos):
 
 - **Referência** (ex.: 01 Outubro de 2026), tirada da data do XML mais recente de `xml/`, com link para o PDF do mesmo mês;
-- **resumo** com o quadro oficial de tributação (%) da Fecombustíveis e, abaixo, a média Brasil em R$ de tributos totais, ICMS e PIS/COFINS + CIDE para gasolina, diesel, etanol e GNV;
+- **resumo** com o quadro oficial de tributação (%) da Fecombustíveis para gasolina, diesel, etanol e GNV;
 - **tabelas por estado** de Gasolina C, Gasolina Premium, Diesel S-500, Diesel S-10, Etanol hidratado e GNV.
 
 Ela se atualiza sozinha: basta colocar o XML do mês novo em `xml/`.

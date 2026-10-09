@@ -54,8 +54,6 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 .resumo tbody th b{font-weight:700}
 .resumo td{font-size:15px;font-variant-numeric:tabular-nums}
 .resumo tr.total td{font-weight:700}
-.resumo .rs{font-size:.8em;font-weight:500;color:var(--muted)}
-.resumo tr.sub th{background:var(--field);font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:8px}
 /* tabelas por estado */
 .tabelas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
 .tabela{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);scroll-margin-top:90px}
@@ -84,9 +82,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
   .resumo tbody th{font-size:12px;width:30%}
   .resumo .det{display:none}
   .resumo td{font-size:13px;padding:8px 2px}
-  .resumo .rs{display:block}
   .resumo .per{display:block;font-size:11px;color:var(--muted)}
-  .resumo tr.sub th{font-size:11px}
 }
 @media print{.top,.rodape,.chips,.aviso,.ref .btn-top{display:none}.card,.tabela{box-shadow:none;break-inside:avoid}body{background:#fff}}
 </style>
@@ -136,7 +132,7 @@ if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;})();
 <section class="card">
   <div class="card-h"><div>
     <h2>Resumo – média Brasil</h2>
-    <p>Percentuais: quadro oficial publicado pela <a href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener">Fecombustíveis</a>, atualizado automaticamente. Valores em R$: média simples das UFs no XML do mês (gasolina C comum; diesel S-10).</p>
+    <p>Quadro oficial de tributação publicado pela <a href="https://www.fecombustiveis.org.br/tributacao" target="_blank" rel="noopener">Fecombustíveis</a>, atualizado automaticamente.</p>
   </div></div>
   <div class="tw" style="border:0;max-height:none"><table class="resumo" id="resumo"></table></div>
 </section>
@@ -199,7 +195,6 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const num=v=>v===null||v===undefined||v===""||isNaN(v)?null:Number(v);
 const f=(v,d)=>v===null?"":v.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const pct=v=>v===null?"":`${v.toLocaleString("pt-BR",{maximumFractionDigits:2})}%`;
-const media=l=>{const v=l.filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
 const BOMBA='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>';
 
 const dataDoXml=n=>{const m=n.match(/(\d{4})(\d{2})(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:"";};
@@ -231,23 +226,13 @@ const total=r=>r&&(r.federal!==null||r.estadual!==null)?(r.federal||0)+(r.estadu
 
 // quadro oficial de tributação da Fecombustíveis (painel.json, lido do site deles); no deploy vem embutido no HTML
 let PAINEL=window.PAINEL||null;
-function resumo(d){
-  const col=[["GASOLINA","gasC","var(--gas)"],["DIESEL","s10","var(--die)"],["ETANOL","eta","var(--eta)"],["GNV","gnv","var(--gnv)"]];
+function resumo(){
+  const col=[["GASOLINA","var(--gas)"],["DIESEL","var(--die)"],["ETANOL","var(--eta)"],["GNV","var(--gnv)"]];
   // % oficiais, como publicadas (colunas casadas pelo nome do combustível)
   const oficial=(PAINEL&&PAINEL.linhas||[]).map((l,i)=>`<tr class="${i?"":"total"}"><th scope="row"><b>${esc(l.rotulo)}</b> <span class="${i?"det":"per"}">${esc(l.det)}</span></th>${
     col.map(c=>{const j=PAINEL.colunas.findIndex(n=>n.toUpperCase()===c[0]);return `<td>${j<0?"":esc(l.valores[j])}</td>`;}).join("")}</tr>`).join("");
-  // valores do mês em R$ (XML); vazio mantém a altura para o layout não pular
-  const med=(k,fn)=>media(UFS.map(uf=>{const r=(d[k]||{})[uf];return r?fn(r):null;}));
-  const rs=(v,dec)=>v===null?"&nbsp;":`<span class="rs">R$</span> ${f(v,dec)}`;
-  const linhas=[
-    ["<b>TRIBUTOS</b> <span class=\"det\">(total)</span>",k=>med(k,total),3,"total"],
-    ["<b>ICMS</b> <span class=\"det\">(imposto estadual)</span>",k=>med(k,r=>r.estadual),4,""],
-    ["<b>PIS/COFINS + CIDE</b> <span class=\"det\">(impostos federais)</span>",k=>med(k,r=>r.federal),4,""]
-  ];
   $("resumo").innerHTML=`<thead><tr><th></th>${col.map(c=>`<th scope="col">${c[0]}</th>`).join("")}</tr></thead>
-  <tbody><tr class="bombas"><td></td>${col.map(c=>`<td style="color:${c[2]}">${BOMBA}</td>`).join("")}</tr>
-  ${oficial?`${oficial}<tr class="sub"><th colspan="5" scope="colgroup">Valores do mês em R$ por litro (GNV por m³) – média das UFs</th></tr>`:""}
-  ${linhas.map(([rot,fn,dec,cls])=>`<tr class="${cls}"><th scope="row">${rot}</th>${col.map(c=>`<td>${rs(fn(c[1]),dec)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  <tbody><tr class="bombas"><td></td>${col.map(c=>`<td style="color:${c[1]}">${BOMBA}</td>`).join("")}</tr>${oficial}</tbody>`;
 }
 
 function tabela(p,linhas,msgs){
@@ -273,7 +258,7 @@ function tabela(p,linhas,msgs){
 
 const chips=l=>l.map(p=>`<a href="#${p.k}"><i style="background:${p.cor}"></i>${esc(p.nome.replace(" (comum ou aditivada)",""))}</a>`).join("");
 // estrutura vazia desenhada já no carregamento: os valores entram depois sem empurrar o layout (CLS)
-resumo({});
+resumo();
 $("chips").innerHTML=chips(COMB);
 $("tabelas").innerHTML=COMB.map(p=>tabela(p,{},[])).join("");
 
@@ -294,8 +279,7 @@ $("tabelas").innerHTML=COMB.map(p=>tabela(p,{},[])).join("");
     const pdf=(j.pdf||[]).find(x=>dataDoPdf(x.nome)===xml.ref);
     if(pdf){$("pdfLink").href=encodeURI(pdf.caminho);$("pdfLink").removeAttribute("target");$("pdfLink").setAttribute("download","");}
     const {out,msgs}=extrair(doc,xml.ref);
-    if(!PAINEL)try{const p=await fetch("painel.json",{cache:"no-store"});if(p.ok)PAINEL=await p.json();}catch(e){}
-    resumo(out);
+    if(!PAINEL)try{const p=await fetch("painel.json",{cache:"no-store"});if(p.ok){PAINEL=await p.json();resumo();}}catch(e){}
     const lista=COMB.filter(p=>out[p.k]);
     $("chips").innerHTML=chips(lista);
     $("tabelas").innerHTML=lista.map(p=>tabela(p,out[p.k],msgs[p.k]||[])).join("");
