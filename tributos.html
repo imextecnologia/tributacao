@@ -276,7 +276,8 @@ $("tabelas").innerHTML=COMB.map(p=>tabela(p,{},[])).join("");
     const [a,m,d]=xml.ref.split("-");
     $("ref").textContent=`${d} ${MESES[+m-1]} de ${a}`;
     document.title=`Tributos dos Combustíveis por Estado – ${MESES[+m-1]}/${a} | Imex`;
-    const pdf=(j.pdf||[]).find(x=>dataDoPdf(x.nome)===xml.ref);
+    // PDF mais recente até a data do XML (o XML pode ser uma atualização no meio do mês, sem PDF próprio)
+    const pdf=(j.pdf||[]).map(x=>({...x,ref:dataDoPdf(x.nome)})).filter(x=>x.ref&&x.ref<=xml.ref).sort((a,b)=>b.ref.localeCompare(a.ref))[0];
     if(pdf){$("pdfLink").href=encodeURI(pdf.caminho);$("pdfLink").removeAttribute("target");$("pdfLink").setAttribute("download","");}
     const {out,msgs}=extrair(doc,xml.ref);
     if(!PAINEL)try{const p=await fetch("painel.json",{cache:"no-store"});if(p.ok){PAINEL=await p.json();resumo();}}catch(e){}

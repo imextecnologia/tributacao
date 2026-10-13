@@ -386,26 +386,28 @@ async function carregarArquivos(){
   if(falta.length){$("autoInfo").textContent=`Sem ${falta.join(" e ")} no repositório — envie manualmente abaixo.`;$("manual").open=true;}
   await verificarPdf();
 }
-// Para o PDF selecionado: usa como base o XML anterior ao mês do PDF; se o XML do mês já existe em xml/, mostra ele
-// (sem chamar a IA); senão, se a IA já leu esse PDF neste navegador, reaproveita o resultado.
+// Para o PDF selecionado: se já existe em xml/ um XML desta data ou posterior (ex.: atualização no meio do mês),
+// mostra o mais recente (sem chamar a IA), comparado com o XML anterior a ele; senão usa como base o XML anterior
+// ao mês do PDF e, se a IA já leu esse PDF neste navegador, reaproveita o resultado.
 async function verificarPdf(){
   const pdf=AUTO.pdf.find(f=>f.caminho===$("pdfAuto").value);if(!pdf||!AUTO.xml.length)return;
   const alvo=dataDoPdf(pdf.nome);
-  if(alvo){$("dtIni").value=alvo;updDtOld();}
-  const base=AUTO.xml.find(f=>alvo&&f.ref<alvo)||AUTO.xml[0];
+  const pronto=alvo&&AUTO.xml.find(f=>f.ref>=alvo); // AUTO.xml está do mais recente para o mais antigo
+  const ref=pronto?pronto.ref:alvo;
+  if(ref){$("dtIni").value=ref;updDtOld();}
+  const base=AUTO.xml.find(f=>ref&&f.ref<ref)||AUTO.xml[0];
   $("xmlAuto").value=base.caminho;
-  const pronto=alvo&&AUTO.xml.find(f=>f.ref===alvo);
   try{
     if(pronto){
       await lerXml();
       const texto=await (await baixarArquivo(pronto.caminho)).text();
-      const r=extrairAtual(parseXml(texto),alvo);
+      const r=extrairAtual(parseXml(texto),ref);
       S.novo=r.atual;
       for(const p of PRODUTOS)if(p.tipo==="uf"&&!S.novo[p.key])S.novo[p.key]=UFS.map(uf=>({uf,pmpf:null,aliquota:null,federal:null,estadual:null}));
       abrirRevisao("já está na pasta xml/");S.msgOverride=r.msgs;render();
       S.out=texto;$("xmlOut").hidden=false;$("xmlOut").textContent=texto;
       ["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=false);
-      $("autoInfo").textContent=`O XML deste PDF já existe (${pronto.nome}) — carregado sem chamar a IA. Comparado com ${base.nome}.`;
+      $("autoInfo").textContent=`XML mais recente já existe (${pronto.nome}) — carregado sem chamar a IA. Comparado com ${base.nome}.`;
       msg("stepMsg","");
       return;
     }
