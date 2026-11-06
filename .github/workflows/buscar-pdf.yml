@@ -28,18 +28,26 @@ jobs:
     if: ${{ inputs.testar_email }}
     runs-on: ubuntu-latest
     steps:
-      - name: Enviar e-mail de teste
-        uses: dawidd6/action-send-mail@v3
+      # envia com nodemailer direto para mostrar a resposta do servidor SMTP (aceitos/rejeitados)
+      - uses: actions/setup-node@v4
         with:
-          server_address: smtp.email-ssl.com.br
-          server_port: 465
-          secure: true
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          from: Tributação Imex <${{ secrets.MAIL_USERNAME }}>
-          to: ${{ secrets.MAIL_TO }}
-          subject: "Teste do aviso de tributos (pode ignorar)"
-          body: "Teste do envio de e-mail do workflow de tributação. Se você recebeu esta mensagem, o aviso está funcionando."
+          node-version: 20
+      - name: Enviar e-mail de teste
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm install --no-save --silent nodemailer
+          node -e '
+          const n=require("nodemailer");
+          const dest=process.env.MAIL_TO.split(/[,;]/).map(x=>x.trim()).filter(Boolean);
+          console.log("destinatários configurados:",dest.length,"| com @:",dest.filter(x=>x.includes("@")).length,"| domínios:",dest.map(x=>x.split("@")[1]||"(sem @)").join(", "));
+          console.log("remetente tem @:",process.env.MAIL_USERNAME.includes("@"),"| domínio:",process.env.MAIL_USERNAME.split("@")[1]);
+          n.createTransport({host:"smtp.email-ssl.com.br",port:465,secure:true,auth:{user:process.env.MAIL_USERNAME,pass:process.env.MAIL_PASSWORD}})
+           .sendMail({from:"Tributação Imex <"+process.env.MAIL_USERNAME+">",to:dest,subject:"Teste do aviso de tributos (pode ignorar)",text:"Teste do envio de e-mail do workflow de tributação."})
+           .then(i=>{console.log("aceitos:",i.accepted.length,"| rejeitados:",i.rejected.length);console.log("resposta SMTP:",i.response);})
+           .catch(e=>{console.error("ERRO:",e.message);process.exit(1);});'
 
   buscar:
     if: ${{ !inputs.testar_email }}
