@@ -10,6 +10,10 @@ on:
         description: "Só testar a geração do XML do PDF mais recente (não grava nada)"
         type: boolean
         default: false
+      testar_email:
+        description: "Só enviar um e-mail de teste para os destinatários (não busca nem grava nada)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,7 +24,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  testar-email:
+    if: ${{ inputs.testar_email }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar e-mail de teste
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.email-ssl.com.br
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Tributação Imex <${{ secrets.MAIL_USERNAME }}>
+          to: ${{ secrets.MAIL_TO }}
+          subject: "Teste do aviso de tributos (pode ignorar)"
+          body: "Teste do envio de e-mail do workflow de tributação. Se você recebeu esta mensagem, o aviso está funcionando."
+
   buscar:
+    if: ${{ !inputs.testar_email }}
     runs-on: ubuntu-latest
     env:
       TEM_EMAIL: ${{ secrets.MAIL_USERNAME != '' && secrets.MAIL_PASSWORD != '' && secrets.MAIL_TO != '' }}
