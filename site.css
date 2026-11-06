@@ -99,6 +99,10 @@ td input{width:100px;text-align:right;padding:5px 8px}
 td.chg input{background:var(--chg)}
 td.err input{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad)}
 .old{color:var(--muted);font-size:11.5px;margin-top:2px}
+.vigs{margin-bottom:10px}
+.tagnova{font-size:10.5px;font-weight:600;color:var(--ok);background:var(--okbg);border-radius:4px;padding:1px 5px;margin-left:4px}
+.vigbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin-bottom:12px}
+.vigbar label{margin:0}
 #tabBody label{margin-top:14px}
 /* saída */
 pre{background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:420px;overflow:auto;font-size:12px;margin:14px 0 0}

@@ -222,7 +222,10 @@ const PRODUTOS=[
  {key:"gnv",nome:"GNV",codes:["220101005","220101006"],tipo:"uf"}
 ];
 const $=id=>document.getElementById(id);
-const S={xml:null,atual:{},novo:null,msgs:{},tab:"gasolinaC",out:null};
+// xml: modelo de onde saem as vigências (estrutura/ordem dos combustíveis); base: XML do mês anterior, só para destacar mudanças
+// vig[produto] = lista de vigências {ini,fim,ini0,fim0,nova,tpl,estados0,dados,msg,orig}; sel[produto] = vigência aberta na tela
+const S={xml:null,base:null,vig:{},sel:{},tab:"gasolinaC",out:null};
+const br=iso=>iso?iso.split("-").reverse().join("/"):"—";
 
 
 /* ---------- chave da IA ---------- */
@@ -268,20 +271,43 @@ function blocoAtual(comb,ini){
 const prodDe=comb=>PRODUTOS.find(p=>comb.codigoANP.split("|").some(c=>p.codes.includes(c.trim())));
 const campo=(est,tag)=>{const f=est.campos.find(c=>c[0]===tag);return f?f[1]:null;};
 
-function extrairAtual(model,ini){
-  const atual={},msgs={};
-  for(const comb of model.combs){
-    const p=prodDe(comb);if(!p)continue;
-    const b=blocoAtual(comb,ini);if(!b)continue;
-    let m=null;for(const e of b.estados){const x=campo(e,"MensagemPadrao");if(x){m=x;break;}}
-    msgs[p.key]=m||"";
-    if(p.tipo==="unico"){const e=b.estados[0];
-      atual[p.key]={federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual")),mistura:num(campo(e,"PercentualMistura"))};
-    }else{
-      atual[p.key]=b.estados.map(e=>({uf:e.uf,pmpf:num(campo(e,"PMPF")),aliquota:num(campo(e,"PercentualICMS")),federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual"))}));
-    }
+/* valores e mensagem de um bloco <tributos> */
+function dadosDe(p,b){
+  if(p.tipo==="unico"){const e=b.estados[0]||{campos:[]};
+    return {federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual")),mistura:num(campo(e,"PercentualMistura"))};}
+  return b.estados.map(e=>({uf:e.uf,pmpf:num(campo(e,"PMPF")),aliquota:num(campo(e,"PercentualICMS")),federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual"))}));
+}
+function msgDe(b){for(const e of b.estados){const x=campo(e,"MensagemPadrao");if(x)return x;}return "";}
+const porIni=(a,b)=>a.ini.localeCompare(b.ini);
+// bloco do XML base com que a vigência é comparada: o que começa na mesma data, senão o que cobre a data
+function origDe(p,ini){
+  const cb=S.base&&S.base.combs.find(c=>prodDe(c)===p);if(!cb)return null;
+  const b=cb.tributos.find(t=>t.ini===ini)||blocoAtual(cb,ini);
+  return b?{dados:dadosDe(p,b),msg:msgDe(b)}:null;
+}
+/* Monta as vigências de cada produto a partir de TODOS os blocos do XML.
+   novo = valores extraídos do PDF (ou null no modo manual): entra como vigência a partir de #dtIni. */
+function montar(novo,soXml){
+  S.vig={};S.sel={};
+  for(const comb of S.xml.combs){const p=prodDe(comb);if(!p)continue;
+    S.vig[p.key]=comb.tributos.map(t=>({ini:t.ini,fim:t.fim,ini0:t.ini,fim0:t.fim,nova:false,tpl:{estados:t.estados},estados0:t.estados,dados:dadosDe(p,t),msg:msgDe(t)})).sort(porIni);
   }
-  return {atual,msgs};
+  const ini=$("dtIni").value,fim=$("dtFim").value;
+  for(const p of PRODUTOS){const vs=S.vig[p.key];if(!vs||!vs.length)continue;
+    if(ini){
+      const mesma=vs.find(v=>v.ini===ini);
+      if(mesma){if(novo){mesma.dados=clonar(novo[p.key]);if(fim)mesma.fim=fim;}}
+      else if(!soXml){
+        const prev=[...vs].reverse().find(v=>v.ini<ini),next=vs.find(v=>v.ini>ini),ref=prev||vs[0];
+        let f=fim||"2050-01-01";if(next&&addDays(next.ini,-1)<f)f=addDays(next.ini,-1);
+        if(prev){prev.fim=addDays(ini,-1);prev.fimAuto=true;}
+        vs.push({ini,fim:f,nova:true,tpl:ref.tpl,dados:clonar(novo?novo[p.key]:ref.dados),msg:ref.msg});
+        vs.sort(porIni);
+      }
+    }
+    for(const v of vs)v.orig=origDe(p,v.ini);
+    S.sel[p.key]=vs.find(v=>v.ini===ini)||[...vs].reverse().find(v=>v.ini<=ini)||vs[vs.length-1];
+  }
 }
 
 /* ---------- Gemini ---------- */
@@ -401,10 +427,8 @@ async function verificarPdf(){
     if(pronto){
       await lerXml();
       const texto=await (await baixarArquivo(pronto.caminho)).text();
-      const r=extrairAtual(parseXml(texto),ref);
-      S.novo=r.atual;
-      for(const p of PRODUTOS)if(p.tipo==="uf"&&!S.novo[p.key])S.novo[p.key]=UFS.map(uf=>({uf,pmpf:null,aliquota:null,federal:null,estadual:null}));
-      abrirRevisao("já está na pasta xml/");S.msgOverride=r.msgs;render();
+      S.xml=parseXml(texto);montar(null,true); // todas as vigências do XML mais recente; S.base (mês anterior) só para comparar
+      abrirRevisao("já está na pasta xml/");
       S.out=texto;$("xmlOut").hidden=false;$("xmlOut").textContent=texto;
       ["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=false);
       $("autoInfo").textContent=`XML mais recente já existe (${pronto.nome}) — carregado sem chamar a IA. Comparado com ${base.nome}.`;
@@ -413,7 +437,7 @@ async function verificarPdf(){
     }
     const salvo=cache.get("ia:"+pdf.caminho);
     if(salvo){
-      await lerXml();S.novo=salvo;
+      await lerXml();montar(salvo);
       abrirRevisao("IA (resultado salvo neste navegador)");
       $("autoInfo").textContent=`Valores deste PDF já extraídos pela IA anteriormente — reaproveitados. Para extrair de novo, clique em "Extrair valores do PDF com IA".`;
       return;
@@ -436,14 +460,12 @@ async function lerXml(){
   if(!t&&$("xmlFile").files[0])t=await $("xmlFile").files[0].text();
   if(!t&&$("xmlAuto").value)t=await (await baixarArquivo($("xmlAuto").value)).text();
   if(!t)throw new Error("Selecione ou cole o XML atual.");
-  S.xml=parseXml(t);
-  const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;
+  S.xml=S.base=parseXml(t);
 }
 function clonar(o){return JSON.parse(JSON.stringify(o));}
 
 $("btnManual").onclick=async()=>{
-  try{await lerXml();S.novo=clonar(S.atual);
-    for(const p of PRODUTOS)if(p.tipo==="uf"&&!S.novo[p.key])S.novo[p.key]=UFS.map(uf=>({uf,pmpf:null,aliquota:null,federal:null,estadual:null}));
+  try{await lerXml();montar(null);
     msg("stepMsg","XML carregado. Edite os valores olhando o PDF.","ok");abrirRevisao("manual");
   }catch(e){msg("stepMsg",e.message,"bad");}
 };
@@ -456,10 +478,10 @@ $("btnIA").onclick=async()=>{
     btn.disabled=true;msg("stepMsg","Enviando PDF para a IA… (pode levar até 1 minuto)","warn");
     const raw=await chamarGemini(await b64(f));
     const aviso=$("stepMsg").textContent.startsWith("Modelo ")?$("stepMsg").textContent+"\n":"";
-    S.novo=normalizar(raw);
-    if(!$("pdf").files[0])cache.set("ia:"+$("pdfAuto").value,S.novo);
-    if(S.novo.dataReferencia&&/^\d{4}-\d{2}-\d{2}$/.test(S.novo.dataReferencia)){$("dtIni").value=S.novo.dataReferencia;updDtOld();
-      const r=extrairAtual(S.xml,$("dtIni").value);S.atual=r.atual;S.msgs=r.msgs;}
+    const novo=normalizar(raw);
+    if(!$("pdf").files[0])cache.set("ia:"+$("pdfAuto").value,novo);
+    if(novo.dataReferencia&&/^\d{4}-\d{2}-\d{2}$/.test(novo.dataReferencia)){$("dtIni").value=novo.dataReferencia;updDtOld();}
+    montar(novo);
     msg("stepMsg",aviso+"Valores extraídos. Revise abaixo antes de gerar — a IA pode errar dígitos.","ok");
     abrirRevisao("IA");
   }catch(e){msg("stepMsg",e.message,"bad");}
@@ -479,21 +501,40 @@ function checks(p,row){
   if(p.key==="etanol"){for(const k of["pmpf","estadual","federal"])if(row[k]===null)err[k]=true;}
   return err;
 }
-function linhaAntiga(p,uf){const a=S.atual[p.key];if(!a)return null;return p.tipo==="unico"?a:(a.find(r=>r.uf===uf)||null);}
-function statusProduto(p){
-  let chg=false,err=false;const n=S.novo[p.key];
-  if(p.tipo==="unico"){const a=linhaAntiga(p);for(const k of["federal","estadual","mistura"])if(!a||!same(a[k],n[k]))chg=true;
+function linhaAntiga(p,v,uf){const a=v.orig&&v.orig.dados;if(!a)return null;return p.tipo==="unico"?a:(a.find(r=>r.uf===uf)||null);}
+// status de UMA vigência: valores/mensagem diferentes do XML base (chg), contas que não fecham (err), datas alteradas (datas)
+function statusVig(p,v){
+  let chg=false,err=false;const n=v.dados;
+  if(p.tipo==="unico"){const a=linhaAntiga(p,v);for(const k of["federal","estadual","mistura"])if(!a||!same(a[k],n[k]))chg=true;
     for(const k of["federal","estadual","mistura"])if(n[k]===null)err=true;}
-  else for(const r of n){const a=linhaAntiga(p,r.uf);for(const k of["pmpf","aliquota","federal","estadual"])if(!a||!same(a[k],r[k]))chg=true;
+  else for(const r of n){const a=linhaAntiga(p,v,r.uf);for(const k of["pmpf","aliquota","federal","estadual"])if(!a||!same(a[k],r[k]))chg=true;
     if(Object.keys(checks(p,r)).length)err=true;}
-  if((S.msgOverride||{})[p.key]!==undefined&&S.msgOverride[p.key]!==S.msgs[p.key])chg=true;
+  if(!v.orig||v.orig.msg!==v.msg)chg=true;
+  const datas=!v.nova&&(v.ini!==v.ini0||(v.fim!==v.fim0&&!v.fimAuto));
+  return {chg,err,datas};
+}
+const vigsDe=p=>(S.vig[p.key]||[]).slice().sort(porIni);
+function statusProduto(p){
+  let chg=false,err=false;
+  for(const v of vigsDe(p)){const s=statusVig(p,v);if(s.chg||s.datas)chg=true;if(s.err)err=true;}
   return {chg,err};
+}
+// datas das vigências de um produto: erros (sobreposição, fim antes do início) bloqueiam a geração; lacunas só avisam
+function avisosDatas(p){
+  const vs=vigsDe(p),erros=[],lacunas=[];
+  vs.forEach((v,i)=>{
+    if(!v.ini||!v.fim){erros.push(`${p.nome}: vigência sem data de início ou fim.`);return;}
+    if(v.fim<v.ini)erros.push(`${p.nome}: vigência de ${br(v.ini)} termina antes de começar (${br(v.fim)}).`);
+    const a=vs[i-1];if(!a||!a.fim)return;
+    if(a.fim>=v.ini)erros.push(`${p.nome}: a vigência de ${br(a.ini)} a ${br(a.fim)} sobrepõe a de ${br(v.ini)} a ${br(v.fim)}.`);
+    else if(addDays(a.fim,1)!==v.ini)lacunas.push(`${p.nome}: lacuna entre ${br(a.fim)} e ${br(v.ini)} (sem vigência nesse intervalo).`);
+  });
+  return {erros,lacunas};
 }
 
 /* ---------- revisão UI ---------- */
 const ROTULO={federal:"Tributo federal",estadual:"ICMS",mistura:"% Mistura",aliquota:"Alíquota ICMS",pmpf:"PMPF"};
 function abrirRevisao(origem){
-  S.msgOverride={...S.msgs};
   $("revCard").classList.remove("carregando");
   $("revCard").hidden=false;$("outCard").hidden=false;$("revInfo").textContent="origem: "+origem;
   S.out=null;$("xmlOut").hidden=true;["btnDlXml","btnDlXlsx","btnCopy"].forEach(i=>$(i).disabled=true);msg("genMsg","");
@@ -502,24 +543,46 @@ function abrirRevisao(origem){
 function render(){
   $("tabs").innerHTML=PRODUTOS.map(p=>{const s=statusProduto(p);return `<button data-k="${p.key}" class="${S.tab===p.key?"on":""}">${p.nome}<span class="dot ${s.err?"err":s.chg?"chg":""}"></span></button>`}).join("");
   $("tabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.k;render();});
-  const p=PRODUTOS.find(x=>x.key===S.tab),n=S.novo[p.key];
+  const p=PRODUTOS.find(x=>x.key===S.tab),vs=vigsDe(p);
+  if(!vs.length){$("tabBody").innerHTML=`<p class="hint">${esc(p.nome)} não tem bloco &lt;tributos&gt; neste XML.</p>`;return;}
+  if(!vs.includes(S.sel[p.key]))S.sel[p.key]=vs[vs.length-1];
+  const vg=S.sel[p.key],n=vg.dados;
+  const chips=vs.map(v=>{const s=statusVig(p,v);return `<button data-v="${vs.indexOf(v)}" class="${v===vg?"on":""}">${br(v.ini)} → ${br(v.fim)}${v.nova?` <span class="tagnova">nova</span>`:""}<span class="dot ${s.err?"err":s.chg||s.datas?"chg":""}"></span></button>`}).join("");
+  const av=avisosDatas(p);
+  let h=`<p class="hint" style="margin:0 0 6px">Vigências de ${esc(p.nome)} — escolha uma para ver e editar os valores dela</p><div class="tabs vigs">${chips}</div>`+
+    `<div class="vigbar"><label>Início <input type="date" id="vIni" value="${escA(vg.ini)}"></label><label>Fim <input type="date" id="vFim" value="${escA(vg.fim)}"></label>`+
+    `<button class="sec" id="vSplit" type="button">Dividir / nova vigência…</button><button class="sec" id="vDel" type="button"${vs.length<2?" disabled":""}>Remover vigência</button></div>`+
+    (av.erros.length||av.lacunas.length?`<div class="msg ${av.erros.length?"bad":"warn"}" style="margin:0 0 12px">${[...av.erros,...av.lacunas].map(esc).join("<br>")}</div>`:"");
   const cell=(val,old,k,i,bad)=>{const c=!same(val,old);return `<td class="${c?"chg":""} ${bad?"err":""}"><input aria-label="${ROTULO[k]}${i<0?"":" – "+n[i].uf}" data-k="${k}" data-i="${i}" value="${val===null?"":fmt(val)}">${c?`<div class="old">antes: ${old===null||old===undefined?"—":fmt(old)}</div>`:""}</td>`;};
-  let h;
-  if(p.tipo==="unico"){const a=linhaAntiga(p)||{};
-    h=`<div class="tw"><table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table></div>`;
+  if(p.tipo==="unico"){const a=linhaAntiga(p,vg)||{};
+    h+=`<div class="tw"><table><tr><th>Todas as UFs</th><th>Tributo federal (R$/L)</th><th>Tributo estadual – ICMS (R$/L)</th><th>% Mistura</th><th>Total</th></tr><tr><td>27 UFs</td>${cell(n.federal,a.federal,"federal",-1,n.federal===null)}${cell(n.estadual,a.estadual,"estadual",-1,n.estadual===null)}${cell(n.mistura,a.mistura,"mistura",-1,n.mistura===null)}<td>${n.federal!==null&&n.estadual!==null?(n.federal+n.estadual).toFixed(3):""}</td></tr></table></div>`;
   }else{
     const pm=p.key==="gnv"?"PMPF (R$/m³)":"PMPF (R$/L)";
-    h=`<div class="tw"><table><tr><th>UF</th><th>Alíquota ICMS %</th><th>${pm}</th><th>ICMS (R$)</th><th>Federal PIS/COFINS (R$)</th><th>Total</th></tr>`+
-      n.map((r,i)=>{const a=linhaAntiga(p,r.uf)||{},e=checks(p,r);
+    h+=`<div class="tw"><table><tr><th>UF</th><th>Alíquota ICMS %</th><th>${pm}</th><th>ICMS (R$)</th><th>Federal PIS/COFINS (R$)</th><th>Total</th></tr>`+
+      n.map((r,i)=>{const a=linhaAntiga(p,vg,r.uf)||{},e=checks(p,r);
         return `<tr><td>${r.uf}</td>${cell(r.aliquota,a.aliquota,"aliquota",i,e.aliquota)}${cell(r.pmpf,a.pmpf,"pmpf",i,e.pmpf)}${cell(r.estadual,a.estadual,"estadual",i,e.estadual)}${cell(r.federal,a.federal,"federal",i,e.federal)}<td>${r.estadual!==null?((r.estadual||0)+(r.federal||0)).toFixed(3):""}</td></tr>`}).join("")+`</table></div>`;
   }
-  h+=`<label style="margin-top:12px">MensagemPadrao (${p.nome})<textarea id="msgEdit">${esc(S.msgOverride[p.key]||"")}</textarea></label>`;
+  h+=`<label style="margin-top:12px">MensagemPadrao (${p.nome})<textarea id="msgEdit">${esc(vg.msg||"")}</textarea></label>`;
   $("tabBody").innerHTML=h;
+  $("tabBody").querySelectorAll(".vigs button").forEach(b=>b.onclick=()=>{S.sel[p.key]=vs[+b.dataset.v];render();});
   $("tabBody").querySelectorAll("td input").forEach(inp=>inp.onchange=()=>{
     const k=inp.dataset.k,i=+inp.dataset.i,v=num(inp.value);
     if(i<0)n[k]=v;else n[i][k]=v;
     S.out=null;render();});
-  $("msgEdit").onchange=e=>{S.msgOverride[p.key]=e.target.value;S.out=null;render();};
+  $("msgEdit").onchange=e=>{vg.msg=e.target.value;S.out=null;render();};
+  $("vIni").onchange=e=>{vg.ini=e.target.value;S.out=null;render();};
+  $("vFim").onchange=e=>{vg.fim=e.target.value;vg.fimAuto=false;S.out=null;render();};
+  $("vSplit").onclick=()=>{
+    const sug=$("dtIni").value&&$("dtIni").value>vg.ini&&$("dtIni").value<=vg.fim?$("dtIni").value:"";
+    const ini=(prompt(`Início da nova vigência (AAAA-MM-DD). Ela copia os valores de ${br(vg.ini)} → ${br(vg.fim)}, e esta vigência passa a terminar na véspera.`,sug)||"").trim();
+    if(!ini)return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(ini)||ini<=vg.ini||ini>vg.fim)return msg("genMsg",`Data inválida: a nova vigência deve começar depois de ${br(vg.ini)} e até ${br(vg.fim)}.`,"bad");
+    if(vs.some(v=>v.ini===ini))return msg("genMsg",`Já existe uma vigência começando em ${br(ini)}.`,"bad");
+    const nv={ini,fim:vg.fim,nova:true,tpl:vg.tpl,dados:clonar(vg.dados),msg:vg.msg,orig:vg.orig};
+    vg.fim=addDays(ini,-1);vg.fimAuto=true;S.vig[p.key].push(nv);S.sel[p.key]=nv;S.out=null;msg("genMsg","");render();};
+  $("vDel").onclick=()=>{
+    if(!confirm(`Remover a vigência de ${br(vg.ini)} a ${br(vg.fim)} de ${p.nome}? Isso deixa um intervalo sem vigência, a menos que você ajuste as datas das vizinhas.`))return;
+    S.vig[p.key]=S.vig[p.key].filter(v=>v!==vg);S.out=null;render();};
 }
 
 /* ---------- geração XML ---------- */
@@ -543,25 +606,37 @@ function novosEstados(p,tpl,novo,mensagem){
 }
 const assin=ests=>JSON.stringify(ests.map(e=>[e.uf,e.campos.map(([t,v])=>[t,num(v)!==null&&t!=="MensagemPadrao"?num(v):v])]));
 
+// estados de uma vigência; se nada mudou em relação ao XML de origem, devolve o texto original (sem reformatar)
+function estadosDe(p,v){
+  const est=novosEstados(p,v.tpl,v.dados,v.msg||"");
+  return v.estados0&&assin(est)===assin(v.estados0)?v.estados0:est;
+}
 function gerar(){
-  const ini=$("dtIni").value,fim=$("dtFim").value;
-  if(!ini||!fim)throw new Error("Informe as datas de vigência.");
-  if(fim<=ini)throw new Error("A data final deve ser maior que a inicial.");
-  const fimAnt=addDays(ini,-1);
-  const model=clonar(S.xml);const log=[];
-  for(const comb of model.combs){
-    const p=prodDe(comb);if(!p){log.push(`• ${comb.codigoANP}: não reconhecido — mantido sem alteração.`);continue;}
-    const tpl=blocoAtual(comb,ini);if(!tpl){log.push(`• ${p.nome}: sem bloco <tributos> — ignorado.`);continue;}
-    const mensagem=S.msgOverride[p.key]||"";
-    const est=novosEstados(p,tpl,S.novo[p.key],mensagem);
-    if(assin(est)===assin(tpl.estados)){log.push(`• ${p.nome}: sem mudança — mantido.`);continue;}
-    if(tpl.ini>=ini){tpl.estados=est;tpl.fim=fim;log.push(`• ${p.nome}: já havia bloco iniciando em ${tpl.ini} — valores substituídos nele.`);continue;}
-    tpl.fim=fimAnt;
-    const idx=comb.tributos.indexOf(tpl);
-    comb.tributos.splice(idx+1,0,{ini,fim,estados:est});
-    log.push(`• ${p.nome}: ALTERADO — antigo até ${fimAnt}, novo de ${ini} até ${fim}.`);
-  }
-  return {xml:serializar(model),log};
+  const erros=[],lacunas=[];
+  for(const p of PRODUTOS){const a=avisosDatas(p);erros.push(...a.erros);lacunas.push(...a.lacunas);}
+  if(erros.length)throw new Error("Corrija as datas das vigências antes de gerar:\n"+erros.join("\n"));
+  const log=[];
+  const combs=S.xml.combs.map(comb=>{
+    const p=prodDe(comb);if(!p){log.push(`• ${comb.codigoANP}: não reconhecido — mantido sem alteração.`);return comb;}
+    const vs=vigsDe(p);if(!vs.length){log.push(`• ${p.nome}: sem bloco <tributos> — ignorado.`);return comb;}
+    const out=[],notas=[],blocoDe=new Map();
+    for(const v of vs){
+      const estados=estadosDe(p,v),ant=out[out.length-1];
+      // vigência nova igual à anterior e colada nela: não cria bloco, só estende a anterior
+      if(v.nova&&ant&&ant.fim===addDays(v.ini,-1)&&assin(estados)===assin(ant.estados)){ant.fim=ant.v.fim0&&ant.v.fim0>v.fim?ant.v.fim0:v.fim;continue;} // mantém o fim original da anterior
+      const bl={ini:v.ini,fim:v.fim,estados,v};out.push(bl);blocoDe.set(v,bl);
+      if(v.nova)notas.push(`nova vigência de ${br(v.ini)} até ${br(v.fim)}`);
+    }
+    // vigências do XML: valores alterados e/ou datas ajustadas (já considerando as vigências novas que foram fundidas)
+    for(const v of vs){const bl=blocoDe.get(v);if(v.nova||!bl)continue;
+      const s=[];if(v.estados0&&bl.estados!==v.estados0)s.push("valores alterados");
+      if(bl.ini!==v.ini0||bl.fim!==v.fim0)s.push(`datas ${br(v.ini0)}–${br(v.fim0)} → ${br(bl.ini)}–${br(bl.fim)}`);
+      if(s.length)notas.push(`vigência ${br(v.ini0)}: ${s.join(", ")}`);}
+    log.push(notas.length?`• ${p.nome}: ALTERADO — ${notas.join("; ")}.`:`• ${p.nome}: sem mudança — mantido.`);
+    return {codigoANP:comb.codigoANP,tributos:out};
+  });
+  if(lacunas.length)log.push("","Atenção — datas:",...lacunas.map(s=>"• "+s));
+  return {xml:serializar({root:S.xml.root,combs,produtosXml:S.xml.produtosXml}),log};
 }
 function serializar(m){
   const L=[`<${m.root}>`,"  <combustiveis>"];
@@ -592,17 +667,23 @@ $("btnGen").onclick=()=>{
   }catch(e){msg("genMsg",e.message,"bad");}
 };
 function baixar(nome,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nome;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
-const tag=()=>$("dtIni").value.replace(/-/g,"");
+// vigência "principal" de um produto: a nova mais recente; senão a que cobre a data de início; senão a última
+function vigPrincipal(p){
+  const vs=vigsDe(p),ini=$("dtIni").value;
+  return [...vs].reverse().find(v=>v.nova)||vs.find(v=>v.ini<=ini&&v.fim>=ini)||vs[vs.length-1]||null;
+}
+// nome dos arquivos: início da vigência nova mais recente (ou a data de início informada)
+const tag=()=>{const ds=PRODUTOS.map(vigPrincipal).filter(v=>v&&v.nova).map(v=>v.ini).sort();return (ds.length?ds[ds.length-1]:$("dtIni").value).replace(/-/g,"");};
 $("btnDlXml").onclick=()=>baixar(`TransparenciaTributos_${tag()}.xml`,new Blob([S.out],{type:"application/xml"}));
 $("btnCopy").onclick=async()=>{try{await navigator.clipboard.writeText(S.out);msg("genMsg","XML copiado.","ok");}catch(e){msg("genMsg","Não foi possível copiar; use Baixar XML.","warn");}};
 
 /* ---------- Excel ---------- */
 $("btnDlXlsx").onclick=()=>{
   if(typeof XLSX==="undefined")return msg("genMsg","Biblioteca do Excel não carregou (sem internet?).","bad");
-  const wb=XLSX.utils.book_new(),ini=$("dtIni").value,fim=$("dtFim").value;
-  const r4=v=>v===null?null:+(+v).toFixed(4);
+  const wb=XLSX.utils.book_new(),r4=v=>v===null?null:+(+v).toFixed(4),msgs=[];
   for(const p of PRODUTOS){
-    const n=S.novo[p.key];let rows;
+    const vg=vigPrincipal(p);if(!vg)continue; // a planilha traz a vigência nova (ou a vigente na data de início)
+    const n=vg.dados,ini=vg.ini,fim=vg.fim;let rows;msgs.push([p.nome,vg.msg||""]);
     if(p.tipo==="unico"){
       rows=[[p.nome,`Vigência ${ini} a ${fim}`],[],["UF","Federal (CIDE,PIS/COF)","ICMS TOTAL","% Mistura","Tributos TOTAL"]];
       for(const uf of UFS)rows.push([uf,r4(n.federal),r4(n.estadual),n.mistura===null?null:n.mistura/100,n.federal!==null&&n.estadual!==null?+(n.federal+n.estadual).toFixed(3):null]);
@@ -617,7 +698,7 @@ $("btnDlXlsx").onclick=()=>{
       for(const c of["B","C","D","E","F"]){const ref=c+i;if(ws[ref]&&!pctCols.includes(c))ws[ref].z=c==="F"||(p.tipo==="unico"&&c==="E")?"0.000":"0.0000";}}
     XLSX.utils.book_append_sheet(wb,ws,p.nome.slice(0,31));
   }
-  if(S.msgOverride){const ws=XLSX.utils.aoa_to_sheet([["Produto","MensagemPadrao"],...PRODUTOS.map(p=>[p.nome,S.msgOverride[p.key]||""])]);ws["!cols"]=[{wch:18},{wch:120}];XLSX.utils.book_append_sheet(wb,ws,"Mensagens");}
+  {const ws=XLSX.utils.aoa_to_sheet([["Produto","MensagemPadrao"],...msgs]);ws["!cols"]=[{wch:18},{wch:120}];XLSX.utils.book_append_sheet(wb,ws,"Mensagens");}
   XLSX.writeFile(wb,`${tag()}.xlsx`);
 };
 </script>

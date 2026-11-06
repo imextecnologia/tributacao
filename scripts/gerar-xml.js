@@ -1,7 +1,8 @@
 // Gera o XML TransparenciaTributos do PDF novo da Fecombustíveis, como o Passo 1–3 do site, sem revisão humana:
 // 1) lê o PDF com o Gemini (mesmo prompt, produtos e UFs do index.html);
 // 2) usa como base o XML mais recente de xml/ anterior à data do PDF;
-// 3) para cada combustível que mudou, o bloco atual termina no dia anterior e um bloco novo vai até 2050-01-01;
+// 3) todas as vigências (blocos <tributos>) do XML base são mantidas; para cada combustível que mudou, a vigência anterior
+//    termina no dia anterior e uma vigência nova vai até 2050-01-01 (igual à anterior = não cria bloco);
 // 4) grava xml/TransparenciaTributos_AAAAMMDD.xml.
 // Uso: node scripts/gerar-xml.js ["pdf/<arquivo>.pdf"] [--pendente] [--testar]
 //   sem arquivo: o PDF mais recente de pdf/; --pendente: só se ainda não há XML da data dele;
@@ -52,20 +53,31 @@ function blocoAtual(comb,ini){
 }
 const prodDe=comb=>PRODUTOS.find(p=>comb.codigoANP.split("|").some(c=>p.codes.includes(c.trim())));
 const campo=(est,tag)=>{const f=est.campos.find(c=>c[0]===tag);return f?f[1]:null;};
-function extrairAtual(model,ini){
-  const atual={},msgs={};
-  for(const comb of model.combs){
-    const p=prodDe(comb);if(!p)continue;
-    const b=blocoAtual(comb,ini);if(!b)continue;
-    let m=null;for(const e of b.estados){const x=campo(e,"MensagemPadrao");if(x){m=x;break;}}
-    msgs[p.key]=m||"";
-    if(p.tipo==="unico"){const e=b.estados[0];
-      atual[p.key]={federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual")),mistura:num(campo(e,"PercentualMistura"))};
-    }else{
-      atual[p.key]=b.estados.map(e=>({uf:e.uf,pmpf:num(campo(e,"PMPF")),aliquota:num(campo(e,"PercentualICMS")),federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual"))}));
-    }
+/* valores e mensagem de um bloco <tributos> (mesmas funções do site) */
+function dadosDe(p,b){
+  if(p.tipo==="unico"){const e=b.estados[0]||{campos:[]};
+    return {federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual")),mistura:num(campo(e,"PercentualMistura"))};}
+  return b.estados.map(e=>({uf:e.uf,pmpf:num(campo(e,"PMPF")),aliquota:num(campo(e,"PercentualICMS")),federal:num(campo(e,"TributoFederal")),estadual:num(campo(e,"TributoEstadual"))}));
+}
+function msgDe(b){for(const e of b.estados){const x=campo(e,"MensagemPadrao");if(x)return x;}return "";}
+const porIni=(a,b)=>a.ini.localeCompare(b.ini);
+const clonar=o=>JSON.parse(JSON.stringify(o));
+/* Vigências de cada produto = TODOS os blocos do XML base; a vigência nova entra a partir de `ini` (como no site).
+   atual/msgs = valores e mensagem da vigência anterior (referência para listar o que mudou). */
+function montar(model,novo,ini){
+  const vig={},atual={},msgs={};
+  for(const comb of model.combs){const p=prodDe(comb);if(!p)continue;
+    const vs=comb.tributos.map(t=>({ini:t.ini,fim:t.fim,fim0:t.fim,nova:false,tpl:{estados:t.estados},estados0:t.estados,dados:dadosDe(p,t),msg:msgDe(t)})).sort(porIni);
+    vig[p.key]=vs;if(!vs.length)continue;
+    const mesma=vs.find(v=>v.ini===ini);
+    const prev=[...vs].reverse().find(v=>v.ini<ini),next=vs.find(v=>v.ini>ini),ref=mesma||prev||vs[0];
+    atual[p.key]=clonar(ref.dados);msgs[p.key]=ref.msg;
+    if(mesma){mesma.dados=clonar(novo[p.key]);mesma.fim=FIM;continue;}
+    let f=FIM;if(next&&addDays(next.ini,-1)<f)f=addDays(next.ini,-1);
+    if(prev)prev.fim=addDays(ini,-1);
+    vs.push({ini,fim:f,nova:true,tpl:ref.tpl,dados:clonar(novo[p.key]),msg:ref.msg});vs.sort(porIni);
   }
-  return {atual,msgs};
+  return {vig,atual,msgs};
 }
 function novosEstados(p,tpl,novo,mensagem){
   if(p.tipo==="unico"){
@@ -86,20 +98,26 @@ function novosEstados(p,tpl,novo,mensagem){
     return {uf:r.uf,campos:c};});
 }
 const assin=ests=>JSON.stringify(ests.map(e=>[e.uf,e.campos.map(([t,v])=>[t,num(v)!==null&&t!=="MensagemPadrao"?num(v):v])]));
-function gerar(xml,novo,msgs,ini){
-  const fimAnt=addDays(ini,-1);
-  const model=JSON.parse(JSON.stringify(xml));const log=[];
-  for(const comb of model.combs){
-    const p=prodDe(comb);if(!p){log.push(`• ${comb.codigoANP}: não reconhecido — mantido sem alteração.`);continue;}
-    const tpl=blocoAtual(comb,ini);if(!tpl){log.push(`• ${p.nome}: sem bloco <tributos> — ignorado.`);continue;}
-    const est=novosEstados(p,tpl,novo[p.key],msgs[p.key]||"");
-    if(assin(est)===assin(tpl.estados)){log.push(`• ${p.nome}: sem mudança.`);continue;}
-    if(tpl.ini>=ini){tpl.estados=est;tpl.fim=FIM;log.push(`• ${p.nome}: valores substituídos no bloco de ${br(tpl.ini)}.`);continue;}
-    tpl.fim=fimAnt;
-    comb.tributos.splice(comb.tributos.indexOf(tpl)+1,0,{ini,fim:FIM,estados:est});
-    log.push(`• ${p.nome}: ALTERADO — antigo até ${br(fimAnt)}, novo a partir de ${br(ini)}.`);
-  }
-  return {xml:serializar(model),log};
+function gerar(xml,vig){
+  const log=[];
+  const combs=xml.combs.map(comb=>{
+    const p=prodDe(comb);if(!p){log.push(`• ${comb.codigoANP}: não reconhecido — mantido sem alteração.`);return comb;}
+    const vs=vig[p.key]||[];if(!vs.length){log.push(`• ${p.nome}: sem bloco <tributos> — ignorado.`);return comb;}
+    const out=[];let nota="";
+    for(const v of vs){
+      const est=novosEstados(p,v.tpl,v.dados,v.msg||"");
+      const estados=v.estados0&&assin(est)===assin(v.estados0)?v.estados0:est; // inalterado: mantém o texto original
+      const ant=out[out.length-1];
+      // vigência nova igual à anterior e colada nela: não cria bloco, só estende a anterior
+      if(v.nova&&ant&&ant.fim===addDays(v.ini,-1)&&assin(estados)===assin(ant.estados)){ant.fim=ant.v.fim0&&ant.v.fim0>v.fim?ant.v.fim0:v.fim;continue;} // mantém o fim original da anterior (ex.: 2099-05-31)
+      out.push({ini:v.ini,fim:v.fim,estados,v});
+      if(v.nova)nota=`ALTERADO — nova vigência a partir de ${br(v.ini)} (anterior termina em ${br(addDays(v.ini,-1))})`;
+      else if(v.estados0&&estados!==v.estados0)nota=`valores substituídos no bloco de ${br(v.ini)}`;
+    }
+    log.push(`• ${p.nome}: ${nota||"sem mudança."}`);
+    return {codigoANP:comb.codigoANP,tributos:out};
+  });
+  return {xml:serializar({root:xml.root,combs,produtosXml:xml.produtosXml}),log};
 }
 function serializar(m){
   const L=[`<${m.root}>`,"  <combustiveis>"];
@@ -229,11 +247,11 @@ function mensagensVencidas(msgs,ini){
   const xmls=fs.readdirSync(dirXml).filter(dataDoXml).sort().reverse();
   const baseNome=xmls.find(n=>dataDoXml(n)<ini);if(!baseNome)throw new Error(`nenhum XML em xml/ anterior a ${ini}`);
   const base=parseXml(fs.readFileSync(path.join(dirXml,baseNome),"utf8"));
-  const {atual,msgs}=extrairAtual(base,ini);
+  const {vig,atual,msgs}=montar(base,novo,ini);
   const saida=`TransparenciaTributos_${ini.replace(/-/g,"")}.xml`;
 
   const probs=problemas(novo),muds=mudancas(atual,novo),venc=mensagensVencidas(msgs,ini);
-  const r=gerar(base,novo,msgs,ini);
+  const r=gerar(base,vig);
   const L=[`PDF: ${path.basename(pdfRel)}`,`Base: xml/${baseNome}`,`Nova vigência: ${br(ini)} (blocos alterados terminam em ${br(addDays(ini,-1))})`,"",...r.log];
   if(muds.length)L.push("",`Valores alterados (${muds.length}):`,...muds.slice(0,80).map(s=>"  "+s),...(muds.length>80?[`  … e mais ${muds.length-80}`]:[]));
   if(venc.length)L.push("","ATENÇÃO: MensagemPadrao copiada da base cita período já vencido — revise no site:",...venc.map(s=>"  "+s));
